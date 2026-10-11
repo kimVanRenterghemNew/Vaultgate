@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vaultgate: the secrets gate for AI agents</title>
+  <meta name="description" content="Vaultgate is a local proxy that lets AI agents use your API keys without seeing them. Open source, offline, Windows first, preview.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body class="bg-base-200 text-base-content">
+
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 3v18M19 3v18M5 12h14M15 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-touch" viewBox="0 0 24 24"><path d="M12 11v4M8 9a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0M5 9a7 7 0 0 1 14 0v5a7 7 0 0 1-14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v4M9 13h.01M15 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 19h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="navbar bg-base-100 shadow-sm px-4 sticky top-0 z-10">
+  <div class="flex-1"><a href="#" class="flex items-center gap-2 text-xl font-bold"><svg class="size-7 text-primary"><use href="#i-gate"/></svg>Vaultgate</a></div>
+  <nav class="hidden md:flex gap-1">
+    <a class="btn btn-ghost btn-sm" href="#why">Why</a>
+    <a class="btn btn-ghost btn-sm" href="#how">How it works</a>
+    <a class="btn btn-ghost btn-sm" href="#proof">Proof</a>
+    <a class="btn btn-ghost btn-sm" href="#install">Install</a>
+    <a class="btn btn-primary btn-sm" href="https://github.com/kimVanRenterghemNew/Vaultgate">GitHub</a>
+  </nav>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-10 space-y-16">
+
+  <section class="hero bg-base-100 rounded-box shadow-sm py-14">
+    <div class="hero-content text-center flex-col max-w-4xl">
+      <div class="badge badge-primary badge-soft">open source · offline · no subscription</div>
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight">Your AI agents use your API keys.<br>They never see them.</h1>
+      <p class="text-lg">Vaultgate is a local proxy between your AI tools and the internet. The agent sends a placeholder; Vaultgate inserts the real key as the request leaves your computer, and only where you allowed it.</p>
+      <div class="flex items-center justify-center gap-4 font-mono text-sm mt-2">
+        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-secondary"><use href="#i-bot"/></svg>your agent</span><span class="opacity-40">──▶</span>
+        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-primary"><use href="#i-gate"/></svg>Vaultgate</span><span class="opacity-40">──▶</span>
+        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-accent"><use href="#i-globe"/></svg>api.github.com</span>
+      </div>
+      <div class="flex flex-wrap justify-center gap-2 mt-4">
+        <a class="btn btn-primary" href="#install">Install</a>
+        <a class="btn btn-ghost" href="#how">How it works</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" class="space-y-6">
+    <h2 class="text-3xl font-bold">Why</h2>
+    <p>An agent that knows your API key can leak it: through a prompt injection in a web page or an email, in a log or a reply, or through a malicious plugin. Once a key has been in a model's context, treat it as leaked. With Vaultgate the agent only ever holds a <em>placeholder</em>, such as <code>{{secret:github_token}}</code>.</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="card bg-base-100 shadow-sm"><div class="card-body">
+        <svg class="size-8 text-primary"><use href="#i-shield"/></svg>
+        <h3 class="card-title">Closed by default</h3>
+        <p>Every request passes nine checks before the secret is decrypted. If any check fails, the request is refused. The audit is fail-closed: no audit entry, no request.</p>
+      </div></div>
+      <div class="card bg-base-100 shadow-sm"><div class="card-body">
+        <svg class="size-8 text-primary"><use href="#i-offline"/></svg>
+        <h3 class="card-title">Local and offline</h3>
+        <p>No account, no cloud, no telemetry. Your encrypted vault lives on your own computer. Planned: connectors for the vault you already use (Bitwarden, Azure Key Vault, AWS, HashiCorp Vault, 1Password), so you don't manage a secret twice.</p>
+      </div></div>
+      <div class="card bg-base-100 shadow-sm"><div class="card-body">
+        <svg class="size-8 text-primary"><use href="#i-code"/></svg>
+        <h3 class="card-title">Open source, no subscription</h3>
+        <p>GPL-3.0, no fees. The code, the tests and the attack bench are public with the first release. Built on libsodium, Argon2id and passkeys (FIDO2), and tested against the real process.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="how" class="space-y-6">
+    <h2 class="text-3xl font-bold">How it works</h2>
+    <div class="mockup-code text-sm">
+      <pre data-prefix="#"><code>the agent only knows its own tool key and a placeholder</code></pre>
+      <pre data-prefix="$"><code>curl http://127.0.0.1:8484/forward/https://api.github.com/user \</code></pre>
+      <pre data-prefix=" "><code>  -H "x-kura-tool-key: ks_…" -H "Authorization: Bearer {{secret:github_token}}"</code></pre>
+      <pre data-prefix=">" class="text-success"><code>200 · x-kura-rule: granted   (the real token went to api.github.com, and nowhere else)</code></pre>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <figure class="card bg-base-100 shadow-sm"><img src="img/tray-popup-goedkeuring.png" alt="Tray pop-up: allow a new combination of tool, secret and host" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>You decide, in the system tray.</b> A new combination of tool, secret and host asks for your OK and shows the method and path. <em>Once</em> allows exactly one request. A grant for 30 minutes, 1 hour, 4 hours or forever also needs a passkey touch.</p></figcaption></figure>
+      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-16-aanraking.png" alt="Portal: confirm with your passkey" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>A program can click a button. It cannot touch your key.</b> Anything that lasts longer than one request, and linking a new tool, is confirmed with your passkey.</p></figcaption></figure>
+      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-7-secrets.png" alt="Portal: secrets, with the hosts and the place in the request" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>The value goes in and never comes back out.</b> For each secret, you choose which hosts may receive it and where in the request it may appear.</p></figcaption></figure>
+      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-15-certificaat-gewijzigd.png" alt="Portal: certificate chain changed, nothing sent until you trust it" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>A different certificate chain for a known host?</b> Nothing is sent until you decide. Vaultgate validates against your operating system's certificate store and remembers each host's chain.</p></figcaption></figure>
+    </div>
+    <p class="text-sm opacity-70">The interface is in Dutch for now; English is next.</p>
+  </section>
+
+  <section id="proof" class="space-y-4">
+    <h2 class="text-3xl font-bold">Proof, not promises</h2>
+    <p><code>npm run attack</code> starts the real process with fake secrets and runs every attack in the bench. The attacks come from security audits and from one question: "if you were an agent on this computer, how would you get in?" For each attack you see the rule that stopped it, or <em>open</em> with the reason. Today: 22 attacks, 17 blocked, 5 open. No secret appeared in any output.</p>
+    <p class="text-sm opacity-70">The full attack table is published with the first release.</p>
+  </section>
+
+  <section id="install" class="space-y-4">
+    <h2 class="text-3xl font-bold">Install</h2>
+    <div class="alert"><span>Preview: the code arrives in the repository with the first release, and the npm package follows. Windows first (nothing to install besides Node.js 24); macOS and Linux are planned.</span></div>
+    <div class="mockup-code text-sm">
+      <pre data-prefix="$"><code>npm i -g vaultgate    # not published yet</code></pre>
+      <pre data-prefix="$"><code>vaultgate             # a welcome window walks you through passkeys and your first tool</code></pre>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bg-base-100 p-6 text-sm text-center">
+  <p>© 2026 Kim Van Renterghem · Vaultgate is open source (<a class="link" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0</a>) · no tracking on this page</p>
+</footer>
+</body>
+</html>

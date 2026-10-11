@@ -1,0 +1,6 @@
+/* Vaultgate landing page: the same look as the portal (Tailwind CSS 4 + daisyUI 5, nord light, dim dark). */
+@import "tailwindcss" source(none);
+@source "./index.html";
+@plugin "daisyui" {
+  themes: nord --default, dim --prefersdark;
+}

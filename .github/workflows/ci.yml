@@ -1,0 +1,51 @@
+# Build and test the published code (it arrives here with each release). Until there is code (no package.json),
+# the job passes with a note.
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Code present?
+        id: code
+        shell: bash
+        run: |
+          if [ -f package.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "No code yet: the first release is coming."; fi
+
+      - uses: actions/setup-node@v4
+        if: steps.code.outputs.present == 'true'
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - if: steps.code.outputs.present == 'true'
+        run: npm ci
+
+      - name: Playwright Chromium (Linux)
+        if: steps.code.outputs.present == 'true' && runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium
+
+      - name: Lint, tests, coverage
+        if: steps.code.outputs.present == 'true'
+        run: npm run check
+
+      - name: Attack bench
+        if: steps.code.outputs.present == 'true'
+        run: npm run attack
