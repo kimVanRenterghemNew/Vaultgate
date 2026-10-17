@@ -1,6 +1,111 @@
-/* Vaultgate landing page: the same look as the portal (Tailwind CSS 4 + daisyUI 5, nord light, dim dark). */
+/* Vaultgate landing page: the look of the portal mockups (Tailwind CSS 4 + daisyUI 5, harborlight light, dracula dark).
+   Fonts are served from this site: no request leaves for a third party.
+   Build: from a folder that has tailwindcss and daisyui installed (e.g. vaultgate), copy index.html, site.js and
+   site.src.css next to each other there and run npx tailwindcss -i site.src.css -o <Vaultgate>/site/site.css --minify */
 @import "tailwindcss" source(none);
 @source "./index.html";
+@source "./tour.html";
+@source "./security.html";
+@source "./site.js";
 @plugin "daisyui" {
-  themes: nord --default, dim --prefersdark;
+  themes: false;
 }
+
+@plugin "daisyui/theme" {
+  name: "harborlight";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98.2% 0.008 98);
+  --color-base-200: oklch(95.4% 0.012 98);
+  --color-base-300: oklch(91.2% 0.016 98);
+  --color-base-content: oklch(22% 0.025 250);
+  --color-primary: oklch(50% 0.1 191);
+  --color-primary-content: oklch(98.7% 0.006 98);
+  --color-secondary: oklch(49% 0.08 238);
+  --color-secondary-content: oklch(97.5% 0.007 235);
+  --color-accent: oklch(73.2% 0.104 82);
+  --color-accent-content: oklch(27.3% 0.038 82);
+  --color-neutral: oklch(40% 0.022 248);
+  --color-neutral-content: oklch(94.3% 0.01 98);
+  --color-info: oklch(52% 0.1 233);
+  --color-info-content: oklch(97.8% 0.007 233);
+  --color-success: oklch(52% 0.13 157);
+  --color-success-content: oklch(97.2% 0.008 157);
+  --color-warning: oklch(78.9% 0.136 86);
+  --color-warning-content: oklch(29.8% 0.035 86);
+  --color-error: oklch(54% 0.19 25);
+  --color-error-content: oklch(97.3% 0.008 25);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "dracula";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(27.5% 0.022 277.508);
+  --color-base-200: oklch(24% 0.02 277.508);
+  --color-base-300: oklch(20.5% 0.018 277.508);
+  --color-base-content: oklch(97.747% 0.007 106.545);
+  --color-primary: oklch(74% 0.14 182.503);
+  --color-primary-content: oklch(15.2% 0.02 256);
+  --color-secondary: oklch(76.5% 0.11 252.5);
+  --color-secondary-content: oklch(15.3% 0.025 255);
+  --color-accent: oklch(83.392% 0.124 66.558);
+  --color-accent-content: oklch(16.678% 0.024 66.558);
+  --color-neutral: oklch(39.445% 0.032 275.524);
+  --color-neutral-content: oklch(87.889% 0.006 275.524);
+  --color-info: oklch(88.263% 0.093 212.846);
+  --color-info-content: oklch(17.652% 0.018 212.846);
+  --color-success: oklch(80% 0.17 148.024);
+  --color-success-content: oklch(17.419% 0.043 148.024);
+  --color-warning: oklch(88% 0.13 100);
+  --color-warning-content: oklch(19.106% 0.026 112.757);
+  --color-error: oklch(68.22% 0.206 24.43);
+  --color-error-content: oklch(13.644% 0.041 24.43);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/atkinson-hyperlegible-next-latin.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; src: url("fonts/atkinson-hyperlegible-mono-latin.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@theme {
+  --font-sans: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/* Screenshots exist in both themes; show the one that matches the page. */
+[data-theme="dracula"] .shot-light, [data-theme="harborlight"] .shot-dark { display: none; }
+:root:not([data-theme]) .shot-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .shot-dark { display: block; }
+  :root:not([data-theme]) .shot-light { display: none; }
+}
+
+/* Rule names look like stamps, as in the portal. */
+.stamp { @apply inline-block font-mono text-xs px-1.5 py-0.5 rounded border whitespace-nowrap; }
+.stamp-deny { @apply border-error/40 text-error bg-error/10; }
+.stamp-ask { @apply border-warning/50 bg-warning/10; }
+.stamp-pass { @apply border-success/40 text-success bg-success/10; }
+
+/* Diagram boxes (HTML, so they reflow on a phone). */
+.node { @apply rounded-box border border-base-content/15 bg-base-100 px-4 py-3; }
+.node-accent { @apply border-primary/60 bg-primary/10; }
+.arrow { @apply text-base-content/40 font-mono select-none; }
+
+.hero-glow { background: radial-gradient(60rem 30rem at 20% -10%, color-mix(in oklch, var(--color-primary), transparent 82%), transparent 70%), radial-gradient(40rem 24rem at 100% 0%, color-mix(in oklch, var(--color-secondary), transparent 85%), transparent 70%); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }

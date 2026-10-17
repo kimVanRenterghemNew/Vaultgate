@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vaultgate: the secrets gate for AI agents</title>
-  <meta name="description" content="Vaultgate is a local proxy that lets AI agents use your API keys without seeing them. Open source, offline, Windows first, preview.">
+  <title>Vaultgate: your AI agents use your keys, they never see them</title>
+  <meta name="description" content="Vaultgate is a local gate between your AI agents and the internet. Agents send a placeholder. Vaultgate fills in the real key as the request leaves, only where you allowed it. Open source, offline, no subscription.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preload" href="fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="site.css">
+  <script src="site.js"></script>
 </head>
-<body class="bg-base-200 text-base-content">
+<body class="bg-base-200 text-base-content font-sans antialiased">
 
 <svg width="0" height="0" class="absolute" aria-hidden="true">
   <symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 3v18M19 3v18M5 12h14M15 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -18,96 +21,301 @@
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
   <symbol id="i-offline" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 19h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7 11V9a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cert" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 8h10M7 12h5M15 15l-1 6 3-2 3 2-1-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-scrub" viewBox="0 0 24 24"><path d="M4 20h16M7 16l9-9 3 3-9 9H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
-<header class="navbar bg-base-100 shadow-sm px-4 sticky top-0 z-10">
-  <div class="flex-1"><a href="#" class="flex items-center gap-2 text-xl font-bold"><svg class="size-7 text-primary"><use href="#i-gate"/></svg>Vaultgate</a></div>
-  <nav class="hidden md:flex gap-1">
-    <a class="btn btn-ghost btn-sm" href="#why">Why</a>
+<header class="navbar bg-base-100/90 backdrop-blur shadow-sm px-4 sticky top-0 z-20">
+  <div class="flex-1"><a href="#top" class="flex items-center gap-2 text-xl font-bold"><svg class="size-7 text-primary" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate</a></div>
+  <nav class="hidden md:flex gap-1" aria-label="Sections">
     <a class="btn btn-ghost btn-sm" href="#how">How it works</a>
+    <a class="btn btn-ghost btn-sm" href="tour.html">Tour</a>
+    <a class="btn btn-ghost btn-sm" href="security.html">Security</a>
     <a class="btn btn-ghost btn-sm" href="#proof">Proof</a>
     <a class="btn btn-ghost btn-sm" href="#install">Install</a>
-    <a class="btn btn-primary btn-sm" href="https://github.com/kimVanRenterghemNew/Vaultgate">GitHub</a>
   </nav>
+  <button type="button" class="btn btn-ghost btn-sm btn-square theme-toggle" aria-label="Switch between light and dark">
+    <svg class="size-5 shot-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="size-5 shot-dark" aria-hidden="true"><use href="#i-sun"/></svg>
+  </button>
+  <a class="btn btn-primary btn-sm ml-1" href="https://github.com/kimVanRenterghemNew/Vaultgate">GitHub</a>
 </header>
 
-<main class="max-w-5xl mx-auto px-4 py-10 space-y-16">
+<main id="top">
 
-  <section class="hero bg-base-100 rounded-box shadow-sm py-14">
-    <div class="hero-content text-center flex-col max-w-4xl">
+<!-- Hero: the promise, the path, and the product. -->
+<section class="hero-glow">
+  <div class="max-w-6xl mx-auto px-4 pt-14 pb-10 grid lg:grid-cols-[1fr_1.15fr] gap-10 items-center">
+    <div class="space-y-6">
       <div class="badge badge-primary badge-soft">open source · offline · no subscription</div>
-      <h1 class="text-4xl md:text-5xl font-bold leading-tight">Your AI agents use your API keys.<br>They never see them.</h1>
-      <p class="text-lg">Vaultgate is a local proxy between your AI tools and the internet. The agent sends a placeholder; Vaultgate inserts the real key as the request leaves your computer, and only where you allowed it.</p>
-      <div class="flex items-center justify-center gap-4 font-mono text-sm mt-2">
-        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-secondary"><use href="#i-bot"/></svg>your agent</span><span class="opacity-40">──▶</span>
-        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-primary"><use href="#i-gate"/></svg>Vaultgate</span><span class="opacity-40">──▶</span>
-        <span class="flex flex-col items-center gap-1"><svg class="size-8 text-accent"><use href="#i-globe"/></svg>api.github.com</span>
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight">Your AI agents use your keys.<br>They never see them.</h1>
+      <p class="text-lg opacity-85">Vaultgate sits between your agents and the internet. An agent sends a placeholder, Vaultgate fills in the real key as the request leaves your computer, only for the tool, the domain and the place you allowed.</p>
+      <div class="flex flex-wrap items-center gap-2 font-mono text-sm" aria-label="Every request's path">
+        <span class="badge badge-secondary gap-1.5"><svg class="size-4" aria-hidden="true"><use href="#i-bot"/></svg>your agent</span><span class="arrow">──▶</span>
+        <span class="badge badge-primary gap-1.5"><svg class="size-4" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate</span><span class="arrow">──▶</span>
+        <span class="badge badge-ghost gap-1.5"><svg class="size-4" aria-hidden="true"><use href="#i-globe"/></svg>api.github.com</span>
       </div>
-      <div class="flex flex-wrap justify-center gap-2 mt-4">
-        <a class="btn btn-primary" href="#install">Install</a>
-        <a class="btn btn-ghost" href="#how">How it works</a>
+      <div class="flex flex-wrap gap-2">
+        <a class="btn btn-primary btn-lg" href="#install">Get Vaultgate</a>
+        <a class="btn btn-ghost btn-lg" href="security.html">Read the security architecture</a>
       </div>
     </div>
-  </section>
+    <figure>
+      <div class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+        <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+        <img class="shot-dark w-full" src="img/screens/dark/04-dashboard--default.webp" width="1180" height="760" alt="Vaultgate Activity: every decision with the name of its rule">
+        <img class="shot-light w-full" src="img/screens/light/04-dashboard--default.webp" width="1180" height="760" alt="Vaultgate Activity: every decision with the name of its rule">
+      </div>
+      <figcaption class="text-xs opacity-60 mt-2 text-center">Design preview of the portal. Switch the theme at the top right.</figcaption>
+    </figure>
+  </div>
+</section>
 
-  <section id="why" class="space-y-6">
-    <h2 class="text-3xl font-bold">Why</h2>
-    <p>An agent that knows your API key can leak it: through a prompt injection in a web page or an email, in a log or a reply, or through a malicious plugin. Once a key has been in a model's context, treat it as leaked. With Vaultgate the agent only ever holds a <em>placeholder</em>, such as <code>{{secret:github_token}}</code>.</p>
-    <div class="grid md:grid-cols-3 gap-4">
-      <div class="card bg-base-100 shadow-sm"><div class="card-body">
-        <svg class="size-8 text-primary"><use href="#i-shield"/></svg>
-        <h3 class="card-title">Closed by default</h3>
-        <p>Every request passes nine checks before the secret is decrypted. If any check fails, the request is refused. The audit is fail-closed: no audit entry, no request.</p>
-      </div></div>
-      <div class="card bg-base-100 shadow-sm"><div class="card-body">
-        <svg class="size-8 text-primary"><use href="#i-offline"/></svg>
-        <h3 class="card-title">Local and offline</h3>
-        <p>No account, no cloud, no telemetry. Your encrypted vault lives on your own computer. Planned: connectors for the vault you already use (Bitwarden, Azure Key Vault, AWS, HashiCorp Vault, 1Password), so you don't manage a secret twice.</p>
-      </div></div>
-      <div class="card bg-base-100 shadow-sm"><div class="card-body">
-        <svg class="size-8 text-primary"><use href="#i-code"/></svg>
-        <h3 class="card-title">Open source, no subscription</h3>
-        <p>GPL-3.0, no fees. The code, the tests and the attack bench are public with the first release. Built on libsodium, Argon2id and passkeys (FIDO2), and tested against the real process.</p>
-      </div></div>
-    </div>
-  </section>
+<div class="max-w-6xl mx-auto px-4 py-12 space-y-24">
 
-  <section id="how" class="space-y-6">
-    <h2 class="text-3xl font-bold">How it works</h2>
-    <div class="mockup-code text-sm">
-      <pre data-prefix="#"><code>the agent only knows its own tool key and a placeholder</code></pre>
-      <pre data-prefix="$"><code>curl http://127.0.0.1:8484/forward/https://api.github.com/user \</code></pre>
-      <pre data-prefix=" "><code>  -H "x-kura-tool-key: ks_…" -H "Authorization: Bearer {{secret:github_token}}"</code></pre>
-      <pre data-prefix=">" class="text-success"><code>200 · x-kura-rule: granted   (the real token went to api.github.com, and nowhere else)</code></pre>
-    </div>
-    <div class="grid md:grid-cols-2 gap-4">
-      <figure class="card bg-base-100 shadow-sm"><img src="img/tray-popup-goedkeuring.png" alt="Tray pop-up: allow a new combination of tool, secret and host" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>You decide, in the system tray.</b> A new combination of tool, secret and host asks for your OK and shows the method and path. <em>Once</em> allows exactly one request. A grant for 30 minutes, 1 hour, 4 hours or forever also needs a passkey touch.</p></figcaption></figure>
-      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-16-aanraking.png" alt="Portal: confirm with your passkey" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>A program can click a button. It cannot touch your key.</b> Anything that lasts longer than one request, and linking a new tool, is confirmed with your passkey.</p></figcaption></figure>
-      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-7-secrets.png" alt="Portal: secrets, with the hosts and the place in the request" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>The value goes in and never comes back out.</b> For each secret, you choose which hosts may receive it and where in the request it may appear.</p></figcaption></figure>
-      <figure class="card bg-base-100 shadow-sm"><img src="img/portaal-15-certificaat-gewijzigd.png" alt="Portal: certificate chain changed, nothing sent until you trust it" class="rounded-t-box"><figcaption class="card-body text-sm"><p><b>A different certificate chain for a known host?</b> Nothing is sent until you decide. Vaultgate validates against your operating system's certificate store and remembers each host's chain.</p></figcaption></figure>
-    </div>
-    <p class="text-sm opacity-70">The interface is in Dutch for now; English is next.</p>
-  </section>
+<!-- Why: the problem in plain words. -->
+<section id="why" class="space-y-6">
+  <h2 class="text-3xl font-bold">An agent that holds a key can leak it</h2>
+  <p class="max-w-3xl opacity-85">A prompt injection in a web page or an email, a key that ends up in a log or a reply, a plugin that is not what it says. Once a key has been in a model's context, treat it as leaked. With Vaultgate the agent only ever holds a <em>placeholder</em>, such as <code class="font-mono">{{secret:github_token}}</code>, and a key of its own that works nowhere else.</p>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body">
+      <svg class="size-8 text-primary" aria-hidden="true"><use href="#i-shield"/></svg>
+      <h3 class="card-title">Closed by default</h3>
+      <p class="opacity-85">No virtual key, no grant, an unknown domain, the wrong place in the request: refused, and the secret is not even decrypted. Every decision carries the name of the rule that made it.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body">
+      <svg class="size-8 text-primary" aria-hidden="true"><use href="#i-offline"/></svg>
+      <h3 class="card-title">Local and offline</h3>
+      <p class="opacity-85">No account, no cloud, no telemetry. The vault is a set of encrypted files on your own computer, and everything in it is encrypted: values, names, grants and the log.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body">
+      <svg class="size-8 text-primary" aria-hidden="true"><use href="#i-touch"/></svg>
+      <h3 class="card-title">A touch, not a click</h3>
+      <p class="opacity-85">A program can click a button. It cannot touch your security key. Anything that lasts longer than one request asks for your passkey.</p>
+    </div></div>
+  </div>
+</section>
 
-  <section id="proof" class="space-y-4">
+<!-- How it works: one request, step by step. -->
+<section id="how" class="space-y-8">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">How one request travels</h2>
+    <p class="max-w-3xl opacity-85">The secret exists in one place only: the Vaultgate process, at the moment it fills in one request. Everything before that is a check; everything after is cleaning up.</p>
+  </div>
+  <ol class="grid md:grid-cols-[1fr_auto_1.4fr_auto_1fr] gap-3 items-stretch" aria-label="The path of a request">
+    <li class="node space-y-2">
+      <p class="flex items-center gap-2 font-semibold"><svg class="size-5 text-secondary" aria-hidden="true"><use href="#i-bot"/></svg>Your agent</p>
+      <p class="text-sm opacity-80">Sends its own virtual key and a placeholder.</p>
+      <code class="block font-mono text-xs bg-base-200 rounded p-2 break-all">Authorization: Bearer {{secret:github_token}}</code>
+    </li>
+    <li class="arrow self-center text-center" aria-hidden="true"><span class="hidden md:inline">──▶</span><span class="md:hidden">▼</span></li>
+    <li class="node node-accent space-y-2">
+      <p class="flex items-center gap-2 font-semibold"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate decides, then fills in</p>
+      <ol class="text-sm space-y-1.5 list-decimal list-inside opacity-90">
+        <li><b>Who?</b> A valid virtual key, from an allowed address.</li>
+        <li><b>What, where?</b> A known secret, to its domain, in an allowed place.</li>
+        <li><b>May it?</b> A grant, or you approve in the tray.</li>
+        <li><b>Logged.</b> The decision is written to the encrypted log first.</li>
+        <li><b>Filled in.</b> Only now is the secret decrypted, into this one request.</li>
+        <li><b>Real site?</b> The TLS chain is checked before a byte leaves.</li>
+      </ol>
+    </li>
+    <li class="arrow self-center text-center" aria-hidden="true"><span class="hidden md:inline">──▶</span><span class="md:hidden">▼</span></li>
+    <li class="node space-y-2">
+      <p class="flex items-center gap-2 font-semibold"><svg class="size-5 text-accent" aria-hidden="true"><use href="#i-globe"/></svg>api.github.com</p>
+      <p class="text-sm opacity-80">Gets the real token, and nobody else does.</p>
+      <p class="text-sm opacity-80 flex gap-2 pt-2 border-t border-base-content/10"><svg class="size-4 shrink-0 mt-0.5 text-primary" aria-hidden="true"><use href="#i-scrub"/></svg><span>On the way back, Vaultgate scrubs the reply: an echoed key never reaches the agent, not even as base64 or hex.</span></p>
+    </li>
+  </ol>
+  <div class="mockup-code text-sm">
+    <pre data-prefix="#"><code>the agent only knows its own virtual key and a placeholder</code></pre>
+    <pre data-prefix="$"><code>curl http://127.0.0.1:8484/forward/https://api.github.com/user \</code></pre>
+    <pre data-prefix=" "><code>  -H "x-vault-gate-tool-key: vg_…" -H "Authorization: Bearer {{secret:github_token}}"</code></pre>
+    <pre data-prefix=">" class="text-success"><code>200 · x-vault-gate-rule: granted</code></pre>
+  </div>
+  <p class="text-sm opacity-70">Many tools need no placeholder at all: point them at Vaultgate (for example with <code class="font-mono">ANTHROPIC_BASE_URL</code>) and Vaultgate puts the key where that service expects it.</p>
+</section>
+
+<section id="tour" class="space-y-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-2">
+      <h2 class="text-3xl font-bold">A tour of the portal</h2>
+      <p class="max-w-3xl opacity-85">It starts with a welcome that gets you going in about two minutes. These are the approved designs the portal is being built to; the shipped portal may still differ.</p>
+    </div>
+    <a class="btn btn-primary" href="tour.html">See every screen</a>
+  </div>
+  <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+    <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+    <img class="shot-dark w-full" src="img/screens/dark/00-welcome-flow--1-welcome.webp" width="1180" height="760" loading="lazy" alt="Welcome: the promise and three points">
+    <img class="shot-light w-full" src="img/screens/light/00-welcome-flow--1-welcome.webp" width="1180" height="760" loading="lazy" alt="Welcome: the promise and three points">
+  </figure>
+</section>
+
+<!-- Both themes, side by side: drag the handle. -->
+<section class="space-y-4">
+  <h2 class="text-3xl font-bold">Light or dark, both first-class</h2>
+  <p class="max-w-3xl opacity-85">Harborlight for the day, Dracula for the night. Every screen is designed and checked in both. Drag the handle to compare.</p>
+  <figure class="diff aspect-[1180/760] rounded-box shadow-xl" aria-label="The same screen in the dark and the light theme">
+    <div class="diff-item-1" role="img" aria-label="Dark theme (Dracula)"><img src="img/screens/dark/08-tools--create.webp" width="1180" height="760" loading="lazy" alt=""></div>
+    <div class="diff-item-2" role="img" aria-label="Light theme (Harborlight)"><img src="img/screens/light/08-tools--create.webp" width="1180" height="760" loading="lazy" alt=""></div>
+    <div class="diff-resizer"></div>
+  </figure>
+</section>
+
+<!-- Security model: diagrams first, details on request. -->
+<section id="security" class="space-y-12">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">The security model</h2>
+    <p class="max-w-3xl opacity-85">Built on libsodium and passkeys (FIDO2 with the PRF extension). No home-made cryptography, no switch to turn a check off, and every rule has a test with a request it must refuse.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_1.2fr] gap-8 items-start">
+    <div class="space-y-3">
+      <h3 class="text-2xl font-semibold">One decision table, first rule wins</h3>
+      <p class="opacity-85">Every request runs down the same table. The first rule that matches decides, and its name goes into the response (<code class="font-mono">x-vault-gate-rule</code>) and into the encrypted log. A refusal happens <b>before</b> the secret is decrypted.</p>
+      <p class="opacity-85">The table is data, not a tangle of if-statements, and every row has a test with a request it must refuse.</p>
+    </div>
+    <ol class="node p-0 divide-y divide-base-content/10 text-sm" aria-label="The decision table, in order">
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">vault-locked</span><span class="opacity-80">the vault is closed</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">no-tool-key</span><span class="opacity-80">no valid virtual key</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">tool-key-revoked</span><span class="opacity-80">the key was revoked</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">client-not-allowed</span><span class="opacity-80">from an address you did not allow</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">no-placeholder</span><span class="opacity-80">nothing in the request asks for a secret</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">unknown-secret</span><span class="opacity-80">no such secret</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">target-host-not-allowed</span><span class="opacity-80">not this secret's domain</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">placeholder-location-not-allowed</span><span class="opacity-80">not a place it may go</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2"><span class="stamp stamp-deny">quiet-hours</span><span class="opacity-80">and the blocks you set</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 bg-success/5"><span class="stamp stamp-pass">granted</span><span class="opacity-80">a grant for this tool, secret and domain</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 bg-warning/5"><span class="stamp stamp-ask">grant-expired</span><span class="opacity-80">the grant ran out: ask again</span></li>
+      <li class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 bg-warning/5"><span class="stamp stamp-ask">needs-approval</span><span class="opacity-80">otherwise: ask in the tray. no answer is no</span></li>
+    </ol>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_1.2fr] gap-8 items-start">
+    <div class="space-y-3">
+      <h3 class="text-2xl font-semibold">Keys inside keys</h3>
+      <p class="opacity-85">Each passkey derives its own key through the PRF extension. That key unwraps one copy of the <b>vault key</b>: 32 random bytes, never derived from a password. The vault key wraps a separate key per record, and each field is encrypted on its own (XChaCha20-Poly1305), bound to its record and position so it cannot be moved elsewhere.</p>
+      <p class="opacity-85">Remove a passkey and its copy is gone; the rest of the vault stays as it is.</p>
+    </div>
+    <figure class="node p-5" aria-label="Key hierarchy">
+      <div class="grid grid-cols-3 gap-2 text-center text-sm">
+        <div class="node py-2"><svg class="size-5 mx-auto text-primary" aria-hidden="true"><use href="#i-key"/></svg>Security key</div>
+        <div class="node py-2"><svg class="size-5 mx-auto text-primary" aria-hidden="true"><use href="#i-touch"/></svg>Phone</div>
+        <div class="node py-2"><svg class="size-5 mx-auto text-primary" aria-hidden="true"><use href="#i-offline"/></svg>Windows Hello</div>
+      </div>
+      <p class="text-center arrow my-1.5 text-xs">▼ PRF, key derivation: one wrapped copy each ▼</p>
+      <div class="node node-accent text-center font-semibold">Vault key <span class="font-normal text-sm opacity-75">· 32 random bytes, only in memory while unlocked</span></div>
+      <p class="text-center arrow my-1.5 text-xs">▼ wraps ▼</p>
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="node py-2">record key<br><span class="opacity-60">a secret</span></div>
+        <div class="node py-2">record key<br><span class="opacity-60">a grant</span></div>
+        <div class="node py-2">record key<br><span class="opacity-60">a log line</span></div>
+      </div>
+      <p class="text-center arrow my-1.5 text-xs">▼ encrypts, field by field ▼</p>
+      <div class="flex flex-wrap justify-center gap-1.5 font-mono text-xs">
+        <span class="badge badge-ghost">name</span><span class="badge badge-ghost">value</span><span class="badge badge-ghost">domain</span><span class="badge badge-ghost">field names</span>
+      </div>
+    </figure>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_1.2fr] gap-8 items-start">
+    <div class="space-y-3">
+      <h3 class="text-2xl font-semibold">Nothing readable on disk</h3>
+      <p class="opacity-85">A stolen laptop or backup gives an attacker files, not information. Even "which tool used which secret, when" is encrypted. Virtual keys are stored only as a keyed hash.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-3 text-sm">
+      <div class="node space-y-1.5"><p class="font-semibold flex items-center gap-2"><svg class="size-4 opacity-60" aria-hidden="true"><use href="#i-log"/></svg>Open, and no secret</p><ul class="opacity-80 list-disc list-inside"><li>format version</li><li>key-derivation settings and salts</li><li>the wrapped vault keys</li><li>random record ids</li></ul></div>
+      <div class="node node-accent space-y-1.5"><p class="font-semibold flex items-center gap-2"><svg class="size-4 text-primary" aria-hidden="true"><use href="#i-lock"/></svg>Encrypted, field by field</p><ul class="opacity-90 list-disc list-inside"><li>secret names, values, domains</li><li>tools and their settings</li><li>grants and approvals</li><li>settings</li><li>the audit log, line by line</li></ul></div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-primary" aria-hidden="true"><use href="#i-log"/></svg>
+      <h3 class="card-title">The log comes first</h3>
+      <p class="text-sm opacity-85">A decision is written to the log before the secret is decrypted. Can't write the log? Then nothing goes out (<span class="stamp stamp-deny">audit-unavailable</span>). After three failures in a row, the vault locks itself.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-primary" aria-hidden="true"><use href="#i-cert"/></svg>
+      <h3 class="card-title">Checked during the handshake</h3>
+      <p class="text-sm opacity-85">Vaultgate trusts what your PC trusts, strictly, and remembers who issued each site's certificate. If that changes, the check during the TLS handshake stops the request before a single byte leaves.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-primary" aria-hidden="true"><use href="#i-touch"/></svg>
+      <h3 class="card-title">Pairing with a check</h3>
+      <p class="text-sm opacity-85">A tool asks for its key. You confirm the short code from its terminal and touch your passkey. The secret behind the request is 256 bits, expires in 10 minutes, and the key is handed out once.</p>
+    </div></div>
+  </div>
+
+  <div class="space-y-4">
+    <h3 class="text-2xl font-semibold">Connecting a tool, step by step</h3>
+    <ul class="timeline timeline-vertical lg:timeline-horizontal">
+      <li><div class="timeline-start timeline-box font-mono text-sm">vaultgate login --name claude-code</div><div class="timeline-middle"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-code"/></svg></div><div class="timeline-end text-sm opacity-75">the tool asks</div><hr class="bg-primary"></li>
+      <li><hr class="bg-primary"><div class="timeline-start text-sm opacity-75">your terminal shows a code</div><div class="timeline-middle"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-offline"/></svg></div><div class="timeline-end timeline-box font-mono text-sm tracking-widest">K9X2-7MTQ</div><hr class="bg-primary"></li>
+      <li><hr class="bg-primary"><div class="timeline-start timeline-box text-sm">you confirm it in the portal</div><div class="timeline-middle"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-check"/></svg></div><div class="timeline-end text-sm opacity-75">same code, your terminal</div><hr class="bg-primary"></li>
+      <li><hr class="bg-primary"><div class="timeline-start text-sm opacity-75">a program can't do this</div><div class="timeline-middle"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-touch"/></svg></div><div class="timeline-end timeline-box text-sm">you touch your passkey</div><hr class="bg-primary"></li>
+      <li><hr class="bg-primary"><div class="timeline-start timeline-box text-sm">the tool has its key</div><div class="timeline-middle"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-key"/></svg></div><div class="timeline-end text-sm opacity-75">handed out once, never shown</div></li>
+    </ul>
+  </div>
+
+  <div class="space-y-4">
+    <h3 class="text-2xl font-semibold">What it protects against, and what not</h3>
+    <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-100">
+      <table class="table">
+        <thead><tr><th>Threat</th><th>What Vaultgate does</th></tr></thead>
+        <tbody>
+          <tr><td>An agent or plugin reads your key</td><td>It never has one: placeholders only. The value lives in the Vaultgate process for one request.</td></tr>
+          <tr><td>A prompt injection sends the key elsewhere</td><td>A domain per secret, a new tool × secret × domain asks you first.</td></tr>
+          <tr><td>The API echoes the key back</td><td>The reply is scrubbed, also across chunk boundaries and as base64 or hex.</td></tr>
+          <tr><td>Stolen disk or backup</td><td>Everything is encrypted; without a way to unlock it, it is useless.</td></tr>
+          <tr><td>A stolen virtual key</td><td>Only works on this PC, only through Vaultgate, only for what was granted. Revoke it in one click. Guessing is slowed down.</td></tr>
+          <tr><td>A program clicks "Allow"</td><td>Anything that lasts asks for a touch of your passkey.</td></tr>
+          <tr><td>Someone in the middle</td><td>Strict TLS: the issuer of each site is remembered, and nothing is sent when it changes.</td></tr>
+          <tr><td><b>Not covered</b></td><td>Malware running as you while the vault is open can read memory. Vaultgate keeps that window small (auto-lock, wiping buffers), and says so.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pt-2">
+      <a class="btn btn-primary" href="security.html">Read the full technical security architecture & attack matrix</a>
+    </div>
+  </div>
+</section>
+
+<section id="proof" class="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
+  <div class="space-y-4">
     <h2 class="text-3xl font-bold">Proof, not promises</h2>
-    <p><code>npm run attack</code> starts the real process with fake secrets and runs every attack in the bench. The attacks come from security audits and from one question: "if you were an agent on this computer, how would you get in?" For each attack you see the rule that stopped it, or <em>open</em> with the reason. Today: 22 attacks, 17 blocked, 5 open. No secret appeared in any output.</p>
-    <p class="text-sm opacity-70">The full attack table is published with the first release.</p>
-  </section>
+    <p class="opacity-85"><code class="font-mono">npm run attack</code> starts the real process with fake secrets and runs every attack in the bench. The attacks come from security audits and from one question: "if you were an agent on this computer, how would you get in?" For each attack you see the rule that stopped it, or <em>open</em> with the reason.</p>
+    <p class="opacity-85">And in every test, a leak check searches all output (logs, responses, pages) for the recognizable fake secrets.</p>
+  </div>
+  <div class="stats stats-vertical sm:stats-horizontal bg-base-100 shadow-sm w-full">
+    <div class="stat"><div class="stat-title">Attacks in the bench</div><div class="stat-value">22</div></div>
+    <div class="stat"><div class="stat-title">Blocked</div><div class="stat-value text-success">17</div><div class="stat-desc">5 open, each with its reason</div></div>
+    <div class="stat"><div class="stat-title">Secrets in any output</div><div class="stat-value">0</div></div>
+  </div>
+</section>
 
-  <section id="install" class="space-y-4">
-    <h2 class="text-3xl font-bold">Install</h2>
-    <div class="alert"><span>Preview: the code arrives in the repository with the first release, and the npm package follows. Windows first (nothing to install besides Node.js 24); macOS and Linux are planned.</span></div>
-    <div class="mockup-code text-sm">
-      <pre data-prefix="$"><code>npm i -g vaultgate    # not published yet</code></pre>
-      <pre data-prefix="$"><code>vaultgate             # a welcome window walks you through passkeys and your first tool</code></pre>
-    </div>
-  </section>
+<section id="install" class="space-y-4">
+  <h2 class="text-3xl font-bold">Get Vaultgate</h2>
+  <div role="alert" class="alert alert-info alert-soft"><svg class="size-5" aria-hidden="true"><use href="#i-code"/></svg><span><b>Preview.</b> The code arrives in this repository with the first release, the npm package follows. Windows first (only Node.js 24 needed). macOS and Linux are planned. The screens above are the approved designs the portal is being built to.</span></div>
+  <div class="mockup-code text-sm">
+    <pre data-prefix="$"><code>npm i -g vaultgate    # not published yet</code></pre>
+    <pre data-prefix="$"><code>vaultgate             # a welcome window walks you through passkeys and your first tool</code></pre>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a class="btn btn-primary" href="https://github.com/kimVanRenterghemNew/Vaultgate">Watch the repository</a>
+    <a class="btn btn-ghost" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0, no subscription</a>
+  </div>
+</section>
 
+</div>
 </main>
 
-<footer class="bg-base-100 p-6 text-sm text-center">
-  <p>© 2026 Kim Van Renterghem · Vaultgate is open source (<a class="link" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0</a>) · no tracking on this page</p>
+<footer class="footer footer-center bg-base-100 p-6 text-sm">
+  <aside><p>© 2026 Kim Van Renterghem · Vaultgate is open source (<a class="link" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0</a>) · no tracking and no third-party requests on this page · font: Atkinson Hyperlegible (OFL)</p></aside>
 </footer>
 </body>
 </html>

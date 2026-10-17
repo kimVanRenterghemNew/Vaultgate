@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vaultgate: a tour of the portal</title>
+  <meta name="description" content="Vaultgate is a local gate between your AI agents and the internet. Agents send a placeholder. Vaultgate fills in the real key as the request leaves, only where you allowed it. Open source, offline, no subscription.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preload" href="fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js"></script>
+</head>
+<body class="bg-base-200 text-base-content font-sans antialiased">
+
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 3v18M19 3v18M5 12h14M15 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-touch" viewBox="0 0 24 24"><path d="M12 11v4M8 9a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0M5 9a7 7 0 0 1 14 0v5a7 7 0 0 1-14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v4M9 13h.01M15 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 19h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7 11V9a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cert" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 8h10M7 12h5M15 15l-1 6 3-2 3 2-1-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-scrub" viewBox="0 0 24 24"><path d="M4 20h16M7 16l9-9 3 3-9 9H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="navbar bg-base-100/90 backdrop-blur shadow-sm px-4 sticky top-0 z-20">
+  <div class="flex-1"><a href="index.html" class="flex items-center gap-2 text-xl font-bold"><svg class="size-7 text-primary" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate</a></div>
+  <nav class="hidden md:flex gap-1" aria-label="Sections">
+    <a class="btn btn-ghost btn-sm" href="index.html#how">How it works</a>
+    <a class="btn btn-ghost btn-sm" href="tour.html">Tour</a>
+    <a class="btn btn-ghost btn-sm" href="security.html">Security</a>
+    <a class="btn btn-ghost btn-sm" href="index.html#proof">Proof</a>
+    <a class="btn btn-ghost btn-sm" href="index.html#install">Install</a>
+  </nav>
+  <button type="button" class="btn btn-ghost btn-sm btn-square theme-toggle" aria-label="Switch between light and dark">
+    <svg class="size-5 shot-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="size-5 shot-dark" aria-hidden="true"><use href="#i-sun"/></svg>
+  </button>
+  <a class="btn btn-primary btn-sm ml-1" href="https://github.com/kimVanRenterghemNew/Vaultgate">GitHub</a>
+</header>
+
+<main id="top" class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+<section class="space-y-4">
+  <h1 class="text-4xl font-bold">A tour of the portal</h1>
+  <p class="max-w-3xl opacity-85">Calm by default, clear when it matters. These are the approved designs the portal is being built to; the text describes the design, and the shipped portal may still differ. Every screen exists in a light and a dark theme: switch at the top right.</p>
+  <nav class="flex flex-wrap gap-1" aria-label="Parts of the tour"><a class="btn btn-sm btn-ghost" href="#welcome">Welcome</a><a class="btn btn-sm btn-ghost" href="#activity">Activity</a><a class="btn btn-sm btn-ghost" href="#approve">Approve</a><a class="btn btn-sm btn-ghost" href="#keys">Virtual keys</a><a class="btn btn-sm btn-ghost" href="#secrets">Secrets</a><a class="btn btn-sm btn-ghost" href="#grants">Grants</a><a class="btn btn-sm btn-ghost" href="#certificates">Certificates</a><a class="btn btn-sm btn-ghost" href="#unlock">Unlock and authentication</a></nav>
+</section>
+
+<section id="welcome" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Welcome: ready in about two minutes</h2>
+  <p class="max-w-3xl opacity-85">Add your passkeys (we recommend two, so one lost key is not a lost vault), connect your first tool, done. A tool connects itself: you run <code class="font-mono">vaultgate login</code>, confirm the code from your terminal, touch your passkey, and the tool has its key. You never copy it.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/00-welcome-flow--1-welcome.webp" width="1180" height="760" loading="lazy" alt="Welcome: the promise and three points">
+      <img class="shot-light w-full" src="img/screens/light/00-welcome-flow--1-welcome.webp" width="1180" height="760" loading="lazy" alt="Welcome: the promise and three points">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Welcome: the promise and three points</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/00-welcome-flow--2-unlock.webp" width="1180" height="760" loading="lazy" alt="How do you want to unlock your vault? Security key, phone or this PC">
+      <img class="shot-light w-full" src="img/screens/light/00-welcome-flow--2-unlock.webp" width="1180" height="760" loading="lazy" alt="How do you want to unlock your vault? Security key, phone or this PC">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">How do you want to unlock your vault? Security key, phone or this PC</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/00-welcome-flow--3-auto.webp" width="1180" height="760" loading="lazy" alt="Connect your first tool in three numbered steps">
+      <img class="shot-light w-full" src="img/screens/light/00-welcome-flow--3-auto.webp" width="1180" height="760" loading="lazy" alt="Connect your first tool in three numbered steps">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Connect your first tool in three numbered steps</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/00-welcome-flow--4-done.webp" width="1180" height="760" loading="lazy" alt="Ready to start">
+      <img class="shot-light w-full" src="img/screens/light/00-welcome-flow--4-done.webp" width="1180" height="760" loading="lazy" alt="Ready to start">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Ready to start</figcaption>
+    </figure>
+</section>
+
+<section id="activity" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Activity: see every decision</h2>
+  <p class="max-w-3xl opacity-85">What went out, what was stopped, and by which rule: <span class="stamp stamp-deny">target-host-not-allowed</span>, <span class="stamp stamp-pass">granted</span>. A hundred calls to the same API become one line with ×100, so nothing important scrolls away.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/04-dashboard--default.webp" width="1180" height="760" loading="lazy" alt="Activity: what was let through and what was stopped">
+      <img class="shot-light w-full" src="img/screens/light/04-dashboard--default.webp" width="1180" height="760" loading="lazy" alt="Activity: what was let through and what was stopped">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Activity: what was let through and what was stopped</figcaption>
+    </figure>
+</section>
+
+<section id="approve" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Approve: you decide, in the tray</h2>
+  <p class="max-w-3xl opacity-85">A new combination of tool, secret and domain asks you first, with the method and path. <b>Allow once</b> lets exactly one request through. Allowing for 30 minutes or longer makes a grant, and asks for a touch of your passkey. No answer: stopped.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/05-goedkeuring--default.webp" width="1180" height="760" loading="lazy" alt="Tray pop-up: a new combination of tool, secret and domain asks for your OK">
+      <img class="shot-light w-full" src="img/screens/light/05-goedkeuring--default.webp" width="1180" height="760" loading="lazy" alt="Tray pop-up: a new combination of tool, secret and domain asks for your OK">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Tray pop-up: a new combination of tool, secret and domain asks for your OK</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/06-aanraking--default.webp" width="1180" height="760" loading="lazy" alt="Touch your passkey to confirm">
+      <img class="shot-light w-full" src="img/screens/light/06-aanraking--default.webp" width="1180" height="760" loading="lazy" alt="Touch your passkey to confirm">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Touch your passkey to confirm</figcaption>
+    </figure>
+</section>
+
+<section id="keys" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Virtual keys: one per tool, useless elsewhere</h2>
+  <p class="max-w-3xl opacity-85">Each tool gets its own virtual key. It only works on this PC and through Vaultgate. Rotate or revoke it in one click; your real secrets do not change. A tool that asks to pair shows its process and where the request came from. Deny is the default; approving asks for a touch.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/08-tools--default.webp" width="1180" height="760" loading="lazy" alt="Virtual keys: one per tool">
+      <img class="shot-light w-full" src="img/screens/light/08-tools--default.webp" width="1180" height="760" loading="lazy" alt="Virtual keys: one per tool">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Virtual keys: one per tool</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/08-tools--create.webp" width="1180" height="760" loading="lazy" alt="Create a virtual key in three numbered steps">
+      <img class="shot-light w-full" src="img/screens/light/08-tools--create.webp" width="1180" height="760" loading="lazy" alt="Create a virtual key in three numbered steps">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Create a virtual key in three numbered steps</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/08-tools--pair.webp" width="1180" height="760" loading="lazy" alt="A tool asks to pair: confirm the code from your terminal">
+      <img class="shot-light w-full" src="img/screens/light/08-tools--pair.webp" width="1180" height="760" loading="lazy" alt="A tool asks to pair: confirm the code from your terminal">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">A tool asks to pair: confirm the code from your terminal</figcaption>
+    </figure>
+</section>
+
+<section id="secrets" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Secrets: in once, never back out</h2>
+  <p class="max-w-3xl opacity-85">A value travels once, from the field to the vault. No page and no API ever returns it. Each secret has the domain it may go to. Mark it <b>sensitive</b> and every approval asks for a touch.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/07-secrets--default.webp" width="1180" height="760" loading="lazy" alt="Secrets: name and domain, never the value">
+      <img class="shot-light w-full" src="img/screens/light/07-secrets--default.webp" width="1180" height="760" loading="lazy" alt="Secrets: name and domain, never the value">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Secrets: name and domain, never the value</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/07-secrets--add.webp" width="1180" height="760" loading="lazy" alt="Add a secret: name, domain, value, sensitive on by default">
+      <img class="shot-light w-full" src="img/screens/light/07-secrets--add.webp" width="1180" height="760" loading="lazy" alt="Add a secret: name, domain, value, sensitive on by default">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Add a secret: name, domain, value, sensitive on by default</figcaption>
+    </figure>
+</section>
+
+<section id="grants" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Grants: tool → secret → domain</h2>
+  <p class="max-w-3xl opacity-85">A grant is one chain: this tool may use this secret on this domain. Quietly, with a notification, or ask every time. From 30 minutes to for good. When it ends, the tray asks again.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/09-toekenningen--default.webp" width="1180" height="760" loading="lazy" alt="Grants: tool, secret and domain as one chain">
+      <img class="shot-light w-full" src="img/screens/light/09-toekenningen--default.webp" width="1180" height="760" loading="lazy" alt="Grants: tool, secret and domain as one chain">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Grants: tool, secret and domain as one chain</figcaption>
+    </figure>
+</section>
+
+<section id="certificates" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Certificates: only to the real site</h2>
+  <p class="max-w-3xl opacity-85">Vaultgate checks the chain of trust before a secret leaves. If a site's chain changes later (a new company proxy reading along, someone in between on a café Wi-Fi), nothing goes out until you decide.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/11-tls-certificaat--default.webp" width="1180" height="760" loading="lazy" alt="Certificates: a broken chain of trust, nothing sent">
+      <img class="shot-light w-full" src="img/screens/light/11-tls-certificaat--default.webp" width="1180" height="760" loading="lazy" alt="Certificates: a broken chain of trust, nothing sent">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Certificates: a broken chain of trust, nothing sent</figcaption>
+    </figure>
+</section>
+
+<section id="unlock" class="space-y-5 scroll-mt-20">
+  <h2 class="text-3xl font-bold">Unlock and authentication: one touch opens it</h2>
+  <p class="max-w-3xl opacity-85">The vault opens with a passkey: a security key, your phone or Windows Hello. After 15 minutes without use the vault locks; unlocking is one touch.</p>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/12-inloggen--default.webp" width="1180" height="760" loading="lazy" alt="Unlock with a passkey">
+      <img class="shot-light w-full" src="img/screens/light/12-inloggen--default.webp" width="1180" height="760" loading="lazy" alt="Unlock with a passkey">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Unlock with a passkey</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/13-passkeys--default.webp" width="1180" height="760" loading="lazy" alt="Authentication: which keys open the vault">
+      <img class="shot-light w-full" src="img/screens/light/13-passkeys--default.webp" width="1180" height="760" loading="lazy" alt="Authentication: which keys open the vault">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Authentication: which keys open the vault</figcaption>
+    </figure>
+    <figure class="mockup-browser border border-base-content/10 bg-base-100 shadow-xl">
+      <div class="mockup-browser-toolbar"><div class="input text-xs">localhost · Vaultgate</div></div>
+      <img class="shot-dark w-full" src="img/screens/dark/14-settings--default.webp" width="1180" height="760" loading="lazy" alt="Settings">
+      <img class="shot-light w-full" src="img/screens/light/14-settings--default.webp" width="1180" height="760" loading="lazy" alt="Settings">
+      <figcaption class="px-4 py-2 text-sm opacity-70 border-t border-base-content/10">Settings</figcaption>
+    </figure>
+</section>
+
+<div class="flex flex-wrap gap-2">
+  <a class="btn btn-primary" href="security.html">Read the security architecture</a>
+  <a class="btn btn-ghost" href="index.html">Back to the overview</a>
+</div>
+</main>
+
+<footer class="footer footer-center bg-base-100 p-6 text-sm">
+  <aside><p>© 2026 Kim Van Renterghem · Vaultgate is open source (<a class="link" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0</a>) · no tracking and no third-party requests on this page · font: Atkinson Hyperlegible (OFL)</p></aside>
+</footer>
+</body>
+</html>

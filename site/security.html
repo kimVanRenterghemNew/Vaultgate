@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vaultgate: Technical Security Architecture & Threat Model</title>
+  <meta name="description" content="Comprehensive technical documentation of Vaultgate's zero-knowledge security model: Hexagonal architecture, 22-vector attack bench, Libsodium XChaCha20-Poly1305 AEAD, WebAuthn PRF key derivation, TLS pinning, Ed25519 integrity, and code reviewer checklist.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preload" href="fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js"></script>
+</head>
+<body class="bg-base-200 text-base-content font-sans antialiased">
+
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 3v18M19 3v18M5 12h14M15 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-touch" viewBox="0 0 24 24"><path d="M12 11v4M8 9a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0M5 9a7 7 0 0 1 14 0v5a7 7 0 0 1-14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v4M9 13h.01M15 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 19h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7 11V9a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cert" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 8h10M7 12h5M15 15l-1 6 3-2 3 2-1-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-scrub" viewBox="0 0 24 24"><path d="M4 20h16M7 16l9-9 3 3-9 9H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="navbar bg-base-100/90 backdrop-blur shadow-sm px-4 sticky top-0 z-20">
+  <div class="flex-1"><a href="index.html" class="flex items-center gap-2 text-xl font-bold"><svg class="size-7 text-primary" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate</a></div>
+  <nav class="hidden md:flex gap-1" aria-label="Sections">
+    <a class="btn btn-ghost btn-sm" href="index.html#how">How it works</a>
+    <a class="btn btn-ghost btn-sm" href="tour.html">Tour</a>
+    <a class="btn btn-ghost btn-sm text-primary font-bold" href="security.html">Security</a>
+    <a class="btn btn-ghost btn-sm" href="index.html#proof">Proof</a>
+    <a class="btn btn-ghost btn-sm" href="index.html#install">Install</a>
+  </nav>
+  <button type="button" class="btn btn-ghost btn-sm btn-square theme-toggle" aria-label="Switch between light and dark">
+    <svg class="size-5 shot-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="size-5 shot-dark" aria-hidden="true"><use href="#i-sun"/></svg>
+  </button>
+  <a class="btn btn-primary btn-sm ml-1" href="https://github.com/kimVanRenterghemNew/Vaultgate">GitHub</a>
+</header>
+
+<main id="top" class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+
+<section class="space-y-4">
+  <div class="badge badge-primary badge-soft">technical specification · threat model · code reviewer guide</div>
+  <h1 class="text-4xl md:text-5xl font-bold leading-tight">Security Architecture & Technical Threat Model</h1>
+  <p class="max-w-3xl text-lg opacity-85">A complete reference for developers, security auditors, and code reviewers: Hexagonal architecture, zero plaintext at rest (Libsodium XChaCha20-Poly1305), hardware proof-of-presence (FIDO2 PRF), fail-closed decision rules, Ed25519 code integrity, and real-time response scrubbing.</p>
+  <nav class="flex flex-wrap gap-1 pt-2 text-xs" aria-label="Document Sections">
+    <a class="btn btn-xs btn-ghost" href="#paradigm">1. Paradigm</a>
+    <a class="btn btn-xs btn-ghost" href="#modules">2. Architecture</a>
+    <a class="btn btn-xs btn-ghost" href="#crypto">3. Cryptography</a>
+    <a class="btn btn-xs btn-ghost" href="#table">4. Decision engine</a>
+    <a class="btn btn-xs btn-ghost" href="#presence">5. Physical touch</a>
+    <a class="btn btn-xs btn-ghost" href="#tls-scrub">6. TLS & scrubbing</a>
+    <a class="btn btn-xs btn-ghost" href="#device">7. Device flow</a>
+    <a class="btn btn-xs btn-ghost" href="#integrity">8. App integrity</a>
+    <a class="btn btn-xs btn-ghost" href="#attacks">9. attacks</a>
+    <a class="btn btn-xs btn-ghost" href="#checklist">10. Review checklist</a>
+  </nav>
+</section>
+
+<!-- 1. The Core Paradigm & Threat Model -->
+<section id="paradigm" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">1. The Core Paradigm: Secret Mediation without Exposure</h2>
+    <p class="max-w-3xl opacity-85">Traditional credential managers assume the client executing code must receive the raw API key to function. For AI agents, this paradigm is fundamentally broken.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="node space-y-2 border-error/30 bg-error/5">
+      <h3 class="text-lg font-bold text-error">The Broken Legacy Paradigm</h3>
+      <p class="text-sm opacity-85">The agent or plugin receives the real key in memory or prompt context. A single prompt injection from a scraped webpage, a hostile repo commit, or a compromised dependency tricks the model into leaking the key in a prompt, writing it to terminal logs, or sending it to an attacker's domain.</p>
+    </div>
+    <div class="node node-accent space-y-2">
+      <h3 class="text-lg font-bold text-primary">The Vaultgate Paradigm</h3>
+      <p class="text-sm opacity-85">The agent only ever receives an opaque placeholder (<code class="font-mono text-xs">{{secret:github_token}}</code>) and a localized virtual key (<code class="font-mono text-xs">x-vault-gate-tool-key: vg_…</code>). Vaultgate injects the real key directly into outbound TCP packets at the very moment the request leaves your computer, strictly verifying destination domain, header location, and user authorization first.</p>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-4">
+    <h3 class="card-title text-base font-bold">Threat Model & Adversary Assumptions</h3>
+    <div class="grid md:grid-cols-2 gap-4 text-sm">
+      <div class="space-y-2">
+        <p class="font-semibold text-primary">In Scope for Defense</p>
+        <ul class="list-disc list-outside pl-4 space-y-1 opacity-85 text-xs">
+          <li><b>Compromised AI Agent:</b> Prompt injection, jailbreaks, poisoned repositories, or malicious plugin dependencies.</li>
+          <li><b>Untrusted / Buggy Tools:</b> Scripts writing environment variables or payloads to telemetry or log files.</li>
+          <li><b>Network Intermediaries (MitM):</b> Rogue proxies, Wi-Fi captive portals, or untrusted corporate inspection CAs.</li>
+          <li><b>Stolen Backup / Disk Image:</b> Offline access to the user's hard drive while the vault is locked.</li>
+          <li><b>Local User-Level Scripts:</b> Processes executing under the same user account attempting synthetic clicks or socket sniffing.</li>
+        </ul>
+      </div>
+      <div class="space-y-2">
+        <p class="font-semibold opacity-60">Out of Scope</p>
+        <ul class="list-disc list-outside pl-4 space-y-1 opacity-75 text-xs">
+          <li>Kernel-level rootkits, hypervisor compromises, or OS-level Ring 0 keyloggers.</li>
+          <li>Physical hardware compromise of hardware tokens (YubiKey, Titan).</li>
+          <li>Cold-boot attacks or hardware RAM probing against active memory while the vault is unlocked.</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+
+  <figure class="node p-5 space-y-4" aria-label="Vaultgate Boundary and Threat Model Architecture">
+    <p class="text-xs uppercase tracking-wider font-semibold opacity-60 text-center">Threat Boundary Architecture</p>
+    <div class="grid md:grid-cols-2 gap-4 items-stretch">
+      <!-- Localhost box -->
+      <div class="rounded-box border border-primary/30 bg-base-200/50 p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="badge badge-primary badge-sm font-semibold">Local Machine (User Account)</span>
+          <span class="text-xs opacity-60 font-mono">127.0.0.1</span>
+        </div>
+        <div class="grid gap-2 text-xs">
+          <div class="node bg-base-100 flex items-center justify-between">
+            <span class="flex items-center gap-1.5 font-bold"><svg class="size-4 text-secondary" aria-hidden="true"><use href="#i-bot"/></svg>AI Agent / Tool</span>
+            <span class="text-[11px] opacity-70">Holds tool key & {{placeholder}}</span>
+          </div>
+          <div class="node bg-base-100 border-error/30 flex items-center justify-between">
+            <span class="flex items-center gap-1.5 font-bold text-error"><svg class="size-4" aria-hidden="true"><use href="#i-bot"/></svg>Malware / Local Scripts</span>
+            <span class="text-[11px] opacity-70">UI clicks & memory dumps blocked</span>
+          </div>
+          <div class="node node-accent flex items-center justify-between">
+            <span class="flex items-center gap-1.5 font-bold text-primary"><svg class="size-4" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate Daemon (:8484)</span>
+            <span class="badge badge-success badge-xs">Fail-Closed Gate</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="node bg-base-100 text-center py-2">
+              <span class="font-bold block"><svg class="size-4 mx-auto text-primary" aria-hidden="true"><use href="#i-lock"/></svg>Encrypted Vault</span>
+              <span class="text-[10px] opacity-60">Zero Plaintext on Disk</span>
+            </div>
+            <div class="node bg-base-100 text-center py-2">
+              <span class="font-bold block"><svg class="size-4 mx-auto text-success" aria-hidden="true"><use href="#i-touch"/></svg>System Tray & Touch</span>
+              <span class="text-[10px] opacity-60">FIDO2 Physical Touch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- External Internet box -->
+      <div class="rounded-box border border-base-content/15 bg-base-200/50 p-4 space-y-3 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="badge badge-ghost badge-sm font-semibold">External Internet</span>
+            <span class="text-xs opacity-60 font-mono">Outbound HTTPS</span>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div class="node bg-success/10 border-success/40 p-3 space-y-1">
+              <div class="flex items-center justify-between font-bold text-success">
+                <span class="flex items-center gap-1.5"><svg class="size-4" aria-hidden="true"><use href="#i-globe"/></svg>Authorized Target API</span>
+                <span class="stamp stamp-pass text-[10px]">GRANTED</span>
+              </div>
+              <p class="text-[11px] opacity-80">e.g. api.github.com · Single request decrypted & sent only if domain, placement, and policy match.</p>
+            </div>
+            <div class="node bg-error/10 border-error/40 p-3 space-y-1">
+              <div class="flex items-center justify-between font-bold text-error">
+                <span class="flex items-center gap-1.5"><svg class="size-4" aria-hidden="true"><use href="#i-globe"/></svg>Attacker Exfiltration Server</span>
+                <span class="stamp stamp-deny text-[10px]">BLOCKED</span>
+              </div>
+              <p class="text-[11px] opacity-80">Rogue domain · Blocked prior to decryption: target-host-not-allowed. Zero bytes leave machine.</p>
+            </div>
+          </div>
+        </div>
+        <div class="node bg-base-100 p-2.5 flex items-center gap-2 text-xs">
+          <svg class="size-4 text-primary shrink-0" aria-hidden="true"><use href="#i-scrub"/></svg>
+          <span class="opacity-80"><b>Streaming Scrubber:</b> Inbound replies are scrubbed in real-time across chunk boundaries before reaching the agent.</span>
+        </div>
+      </div>
+    </div>
+  </figure>
+</section>
+
+<!-- 2. Hexagonal Modular Architecture -->
+<section id="modules" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">2. Hexagonal Module Architecture (Ports & Adapters)</h2>
+    <p class="max-w-3xl opacity-85">Vaultgate enforces clean architecture principles. Code is partitioned into discrete functional modules with dependency inversion, zero classes, and no ambient globals.</p>
+  </div>
+
+  <figure class="node p-5 space-y-3" aria-label="Hexagonal Process Architecture & Pipeline Lifecycle">
+    <p class="text-xs uppercase tracking-wider font-semibold opacity-60 text-center">Hexagonal Pipeline Lifecycle</p>
+    <div class="grid md:grid-cols-[1fr_auto_2fr_auto_1fr] gap-2 items-center text-xs">
+      <!-- Agent -->
+      <div class="node bg-base-100 p-3 text-center space-y-1">
+        <svg class="size-5 mx-auto text-secondary" aria-hidden="true"><use href="#i-bot"/></svg>
+        <span class="font-bold block">AI Agent</span>
+        <code class="text-[10px] block font-mono bg-base-200 rounded px-1">vg_... + {{secret:x}}</code>
+      </div>
+
+      <div class="arrow text-center hidden md:block">──▶</div>
+
+      <!-- Vaultgate Pipeline -->
+      <div class="node node-accent p-3 space-y-2">
+        <div class="flex items-center justify-between border-b border-base-content/10 pb-1.5">
+          <span class="font-bold flex items-center gap-1 text-primary"><svg class="size-4" aria-hidden="true"><use href="#i-gate"/></svg>Vaultgate Daemon Process</span>
+          <span class="badge badge-xs badge-primary">Zero Ambient Globals</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center text-[11px]">
+          <div class="node py-1.5 bg-base-100 font-mono">1. Ingress<br><span class="opacity-60 text-[9px]">:8484</span></div>
+          <div class="node py-1.5 bg-base-100 font-mono">2. Policy<br><span class="opacity-60 text-[9px]">Decision Table</span></div>
+          <div class="node py-1.5 bg-base-100 font-mono">3. Approval<br><span class="opacity-60 text-[9px]">Tray / Touch</span></div>
+          <div class="node py-1.5 bg-base-100 font-mono">4. Egress<br><span class="opacity-60 text-[9px]">Decryption</span></div>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-base-content/10 text-[10px] opacity-75">
+          <span>Write-Ahead Audit Log (Encrypted)</span>
+          <span>Inbound Response Scrubbing (Chunk Window)</span>
+        </div>
+      </div>
+
+      <div class="arrow text-center hidden md:block">──▶</div>
+
+      <!-- Target API -->
+      <div class="node bg-base-100 p-3 text-center space-y-1">
+        <svg class="size-5 mx-auto text-accent" aria-hidden="true"><use href="#i-globe"/></svg>
+        <span class="font-bold block">Target API</span>
+        <span class="text-[10px] opacity-70 block">Real Secret Injected for 1 Request</span>
+      </div>
+    </div>
+  </figure>
+
+  <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-100">
+    <table class="table table-xs md:table-sm">
+      <thead><tr><th>Module</th><th>Core Responsibility</th><th>Injected Ports / Dependencies</th></tr></thead>
+      <tbody>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/vault/</code></td><td>Key hierarchy, AEAD field encryption/decryption, locking lifecycle</td><td><code class="font-mono text-xs">crypto, store, clock</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/store/</code></td><td>Storage backend (encrypted local file store; external vaults planned)</td><td><code class="font-mono text-xs">fs</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/registry/</code></td><td>Domain entities: secrets, tools (HMACs), grants, settings; never outputs plaintext</td><td><code class="font-mono text-xs">vault, clock, crypto</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/crypto/</code></td><td>Cryptographic primitives wrapping Libsodium (<code class="font-mono text-xs">sodium-native</code>)</td><td>None (Libsodium C-bindings)</td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/policy/</code></td><td>Tool key auth, host matching, placement validation, rule evaluation</td><td><code class="font-mono text-xs">vault</code> (names & rules only)</td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/approval/</code></td><td>Tray approval coordination, timeout enforcement (default 30s), escalation</td><td><code class="font-mono text-xs">notifier, clock</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/proxy/</code></td><td>Ingress parsing (forward & reverse routes), secret injection, egress, streaming</td><td><code class="font-mono text-xs">policy, approval, vault, scrub, audit, http</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/scrub/</code></td><td>Outbound response stream scrubbing across chunk boundaries</td><td>None (Pure buffer/string parser)</td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/audit/</code></td><td>Encrypted append-only audit logging; write-ahead; never logs secret values</td><td><code class="font-mono text-xs">vault, store, clock</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/portal/</code></td><td>Loopback HTTP API & UI on <code class="font-mono text-xs">127.0.0.1</code>, WebAuthn passkey login</td><td><code class="font-mono text-xs">vault, policy, audit, webauthn</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/device/</code></td><td>Tool pairing via RFC 8628 Device Flow, ephemeral verification codes</td><td><code class="font-mono text-xs">registry, vault, audit, notifier, clock, crypto</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/tls/</code></td><td>TLS trust store validation and Trust-On-First-Use (TOFU) pinning</td><td><code class="font-mono text-xs">registry, audit, clock</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/window/</code></td><td>Isolated Chromium/Edge app-mode profile launcher (<code class="font-mono text-xs">--disable-extensions</code>)</td><td>OS process spawn</td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/tray-link/</code></td><td>Secure IPC to tray helper (named pipe/socket + one-time stdin token)</td><td><code class="font-mono text-xs">crypto</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/decision/</code></td><td>Pure composition decision kernel: guards, reducers, rule evaluation</td><td>None (Pure functional logic)</td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/touch/</code></td><td>FIDO2 user verification assertion coordinator for physical touch confirmation</td><td><code class="font-mono text-xs">clock</code></td></tr>
+        <tr><td><code class="font-mono text-xs font-bold text-primary">src/composition.js</code></td><td>The single wiring location that instantiates concrete adapters</td><td>All port implementations</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">No ES6 Classes</h3>
+      <p class="text-sm opacity-85">All components are built using pure factory functions. Errors are tagged plain Error objects with explicit code properties, making them transparent to serialize and audit.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">Dependency Inversion</h3>
+      <p class="text-sm opacity-85">Zero ambient globals (<code class="font-mono text-xs">process.env</code>, <code class="font-mono text-xs">Date.now()</code>, raw networking). Every module receives its ports explicitly via arguments (<code class="font-mono text-xs">createProxy({ ... })</code>).</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">CI Structural Limits</h3>
+      <p class="text-sm opacity-85">CI enforces strict invariants: files must stay under 200 lines (<code class="font-mono text-xs">codeStructure.test.js</code>) and cross-module imports must only target <code class="font-mono text-xs">index.js</code> (<code class="font-mono text-xs">moduleApi.test.js</code>).</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- 3. Cryptographic Architecture -->
+<section id="crypto" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">3. Zero-Knowledge Envelope Encryption & Storage Engine</h2>
+    <p class="max-w-3xl opacity-85">Built with Libsodium (<code class="font-mono">crypto_aead_xchacha20poly1305_ietf</code>) following the zero-knowledge Bitwarden security model, without password-derived vault keys.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_1.2fr] gap-8 items-start">
+    <div class="space-y-3">
+      <h3 class="text-xl font-semibold">Layered Key Hierarchy</h3>
+      <p class="text-sm opacity-85">The master <b>Vault Key</b> is 32 cryptographically random bytes generated once. It is never derived from a password and exists strictly in RAM while unlocked.</p>
+      <p class="text-sm opacity-85">Each passkey registered with Vaultgate derives a hardware-bound Key Encryption Key (KEK) using the <b>WebAuthn PRF extension</b> (<code class="font-mono">hmac-secret</code>). This KEK wraps its own copy of the Vault Key. Removing a passkey simply deletes its wrapped copy without requiring re-encryption of stored secrets.</p>
+      <p class="text-sm opacity-85">Every individual record (secret, grant, or audit log entry) has its own independent 32-byte <b>Item Key</b>. Rotating or updating one secret touches only that single record.</p>
+    </div>
+    <div class="node p-5">
+      <p class="text-xs uppercase tracking-wider font-semibold opacity-60 mb-3 text-center">Cryptographic Hierarchy & Key Wrapping</p>
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="node py-2 font-mono">Passkey 1<br><span class="opacity-60">FIDO2 PRF</span></div>
+        <div class="node py-2 font-mono">Passkey 2<br><span class="opacity-60">FIDO2 PRF</span></div>
+        <div class="node py-2 font-mono">Passphrase<br><span class="opacity-60">Argon2id</span></div>
+      </div>
+      <p class="text-center arrow my-2 text-xs">▼ unwraps ▼</p>
+      <div class="node node-accent text-center font-bold">Vault Key <span class="font-normal text-xs opacity-75">(32 random bytes, volatile RAM only)</span></div>
+      <p class="text-center arrow my-2 text-xs">▼ wraps independent record keys ▼</p>
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="node py-2">Item Key<br><span class="opacity-60">Secret</span></div>
+        <div class="node py-2">Item Key<br><span class="opacity-60">Grant</span></div>
+        <div class="node py-2">Item Key<br><span class="opacity-60">Audit Log</span></div>
+      </div>
+      <p class="text-center arrow my-2 text-xs">▼ field-by-field XChaCha20-Poly1305 with bound AAD ▼</p>
+      <div class="flex flex-wrap justify-center gap-1.5 font-mono text-xs">
+        <span class="badge badge-ghost">name</span><span class="badge badge-ghost">value</span><span class="badge badge-ghost">domain</span><span class="badge badge-ghost">field-manifest</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">EncString On-Disk Format</h3>
+      <p class="text-sm opacity-85">Encrypted fields follow: <code class="font-mono text-xs">v1.&lt;nonce_24b_base64&gt;.&lt;ciphertext_base64&gt;</code>. Even field names and record types are sealed in an encrypted schema manifest, concealing record types on disk.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">Context-Bound AAD</h3>
+      <p class="text-sm opacity-85">Ciphertexts bind to strict context: <code class="font-mono text-xs">AAD = recordId | fieldPos | recordVersion | v1</code>. An attacker cannot move a ciphertext from a name field into a secret value field without instant MAC failure.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">Anti-Rollback Header MAC</h3>
+      <p class="text-sm opacity-85">A keyed MAC over the storage header binds all public keys and a manifest of record versions: <code class="font-mono text-xs">{recordId: version}</code>. Reverting an individual record halts unlock with <span class="stamp stamp-deny text-xs">VAULT_TAMPERED</span>.</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- 4. Deterministic Decision Table -->
+<section id="table" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">4. Deterministic Decision Engine & Fail-Closed Rules</h2>
+    <p class="max-w-3xl opacity-85">Requests pass sequentially down an unalterable evaluation table. The first matching rule decides the outcome. The rule name is returned in the response header (<code class="font-mono">x-vault-gate-rule</code>) and committed to the encrypted write-ahead audit log.</p>
+  </div>
+
+  <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-100">
+    <table class="table text-sm">
+      <thead><tr><th>Order</th><th>Rule Name</th><th>Condition Evaluated</th><th>Action & HTTP Status</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="stamp stamp-deny">vault-locked</span></td><td>Vault daemon is locked or in auto-lock cooldown</td><td>Deny (423 Locked) · Zero decryption</td></tr>
+        <tr><td>2</td><td><span class="stamp stamp-deny">no-tool-key</span></td><td>Missing or malformed <code class="font-mono text-xs">x-vault-gate-tool-key</code></td><td>Deny (401 Unauthorized) · Zero decryption</td></tr>
+        <tr><td>3</td><td><span class="stamp stamp-deny">tool-key-revoked</span></td><td>Tool virtual key has been revoked by user</td><td>Deny (401 Unauthorized) · Zero decryption</td></tr>
+        <tr><td>4</td><td><span class="stamp stamp-deny">client-not-allowed</span></td><td>Request originated from an unapproved IP/client address</td><td>Deny (403 Forbidden) · Zero decryption</td></tr>
+        <tr><td>5</td><td><span class="stamp stamp-deny">no-placeholder</span></td><td>Request does not reference any <code class="font-mono text-xs">{{secret:...}}</code> placeholder</td><td>Deny (400 Bad Request) · Zero decryption</td></tr>
+        <tr><td>6</td><td><span class="stamp stamp-deny">unknown-secret</span></td><td>Referenced secret name does not exist in vault</td><td>Deny (404 Not Found) · Zero decryption</td></tr>
+        <tr><td>7</td><td><span class="stamp stamp-deny">target-host-not-allowed</span></td><td>Destination host does not match the secret's allowed domain</td><td>Deny (403 Forbidden) · Zero decryption</td></tr>
+        <tr><td>8</td><td><span class="stamp stamp-deny">placeholder-location-not-allowed</span></td><td>Placeholder placed in URL query parameter or unapproved header</td><td>Deny (403 Forbidden) · Zero decryption</td></tr>
+        <tr><td>9</td><td><span class="stamp stamp-deny">quiet-hours</span></td><td>Scheduled quiet hours or active tool block in effect</td><td>Deny (403 Forbidden) · Zero decryption</td></tr>
+        <tr class="bg-success/5"><td>10</td><td><span class="stamp stamp-pass">granted</span></td><td>Valid active grant matches tool × secret × destination domain</td><td><b>Let through (200 OK)</b> · Decrypt for single request</td></tr>
+        <tr class="bg-warning/5"><td>11</td><td><span class="stamp stamp-ask">grant-expired</span></td><td>Previous grant expired (e.g. 30 min duration elapsed)</td><td>Ask again in system tray</td></tr>
+        <tr class="bg-warning/5"><td>12</td><td><span class="stamp stamp-ask">needs-approval</span></td><td>New combination: prompts user in system tray</td><td>Awaiting approval · Timeout = Deny (401)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+    <h3 class="card-title text-base font-bold">Write-Ahead Audit Logging & Fail-Closed Quarantine</h3>
+    <p class="text-sm opacity-85">To prevent untracked exfiltration, Vaultgate writes the decision to the encrypted audit log <b>before</b> decrypting any secret. If writing to the audit log fails (disk full or write lock), the request halts with <span class="stamp stamp-deny text-xs">audit-unavailable</span>. After 3 consecutive audit failures, Vaultgate locks down the entire daemon process.</p>
+  </div></div>
+</section>
+
+<!-- 5. Physical Touch Guarantee -->
+<section id="presence" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">5. A Touch, Not a Click: Anti-Automation Defense & IPC</h2>
+    <p class="max-w-3xl opacity-85">Why software confirmation dialogs are insecure against local scripts, and how hardware capacitive touch and secure IPC solve it.</p>
+  </div>
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-error" aria-hidden="true"><use href="#i-bot"/></svg>
+      <h3 class="card-title text-base font-bold">The UI Automation Threat</h3>
+      <p class="text-sm opacity-85">Any local process running under the same user account (PowerShell, Python, UI Automation, SendKeys) can locate and click an "Allow" button on a standard desktop popup.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-primary" aria-hidden="true"><use href="#i-offline"/></svg>
+      <h3 class="card-title text-base font-bold">1.5s Anti-Click Delay</h3>
+      <p class="text-sm opacity-85">Tray confirmation popups disable actionable buttons for the first 1500 milliseconds upon appearance, thwarting rapid scripted event loops trying to intercept the window.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <svg class="size-7 text-success" aria-hidden="true"><use href="#i-touch"/></svg>
+      <h3 class="card-title text-base font-bold">Mandatory FIDO2 Touch</h3>
+      <p class="text-sm opacity-85">"Allow once" permits strictly one request. Any durable grant (30 min, 4 hr, permanent, pairing a tool, or sensitive keys) requires a physical passkey touch. Malware cannot synthesize capacitive touch.</p>
+    </div></div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-3">
+    <h3 class="card-title text-base font-bold">The Touch IPC & Challenge Protocol</h3>
+    <p class="text-sm opacity-85">The daemon and desktop tray communicate via a local socket / named pipe (<code class="font-mono text-xs">src/tray-link/</code>) secured by a one-time cryptographic token exchanged over <code class="font-mono text-xs">stdin</code> during startup. When high privilege is requested, Vaultgate initiates a touch challenge at <code class="font-mono text-xs">/touch#&lt;id&gt;</code> with a 256-bit one-time nonce and a 2-minute time-to-live. Users can enforce <code class="font-mono text-xs">touchAuthenticator: external</code> to require hardware USB/NFC tokens (e.g. YubiKey) over software PINs.</p>
+  </div></div>
+</section>
+
+<!-- 6. TLS Verification & Response Scrubbing -->
+<section id="tls-scrub" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">6. Handshake Verification & Multi-Alignment Scrubbing</h2>
+    <p class="max-w-3xl opacity-85">Protecting outbound data before a single byte leaves, and cleaning inbound replies on the way back.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="size-7 text-primary shrink-0" aria-hidden="true"><use href="#i-cert"/></svg>
+          <h3 class="card-title text-base font-bold">Strict TLS & TOFU Pinning</h3>
+        </div>
+        <p class="text-sm opacity-85">Vaultgate checks the TLS certificate chain during the handshake (via <code class="font-mono text-xs">checkServerIdentity</code>), before writing any request payload:</p>
+        <ul class="text-sm list-disc list-outside pl-4 space-y-2 opacity-85">
+          <li>Validates against the OS certificate store (including corporate inspection roots).</li>
+          <li>Remembers leaf issuer and root fingerprint upon first verified connection (Trust On First Use).</li>
+          <li>If the certificate chain changes unexpectedly, the handshake aborts immediately with <span class="stamp stamp-deny">tls-chain-changed</span>: not a single byte of plaintext leaves your machine.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="size-7 text-primary shrink-0" aria-hidden="true"><use href="#i-scrub"/></svg>
+          <h3 class="card-title text-base font-bold">Streaming Response Scrubber</h3>
+        </div>
+        <p class="text-sm opacity-85">Upstream APIs that reflect or echo headers cannot exfiltrate secrets back to the agent:</p>
+        <ul class="text-sm list-disc list-outside pl-4 space-y-2 opacity-85">
+          <li>Scans outbound stream buffers in real-time as chunks arrive over the network.</li>
+          <li>Detects raw secret values, hexadecimal encodings, and all three possible base64 byte offsets.</li>
+          <li>Maintains sliding cross-chunk windows across TCP packets to eliminate edge-boundary leaks.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. RFC 8628 Device Flow -->
+<section id="device" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">7. Agent Onboarding: RFC 8628 Device Flow</h2>
+    <p class="max-w-3xl opacity-85">Autonomous AI tools and CLI assistants pair with Vaultgate using an RFC 8628 Device Authorization Flow adapted for local environments.</p>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">1. Request Pairing</h3>
+      <p class="text-sm opacity-85">The agent requests pairing via <code class="font-mono text-xs">POST /device/code</code> with its tool name. Vaultgate responds with an ephemeral verification code (e.g. <code class="font-mono text-xs">ABCD-EFGH</code>) and starts a 10-minute countdown.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">2. User Verification</h3>
+      <p class="text-sm opacity-85">The user sees the visual code in their terminal and confirms it in the system tray or portal. Completing pairing mandates a <b>physical passkey touch</b>.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold">3. One-Time Issuance</h3>
+      <p class="text-sm opacity-85">Once verified, the agent polls <code class="font-mono text-xs">POST /device/token</code> and receives the virtual key <code class="font-mono text-xs">vg_...</code> exactly once. Vaultgate stores only a keyed HMAC in its registry.</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- 8. Application & Deployment Integrity -->
+<section id="integrity" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">8. Application & Deployment Integrity (Runtime & Supply-Chain)</h2>
+    <p class="max-w-3xl opacity-85">Ensuring an autonomous agent executing in the same user session cannot silently alter Vaultgate's code or approval scripts to grant itself unauthorized access.</p>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="size-7 text-primary shrink-0" aria-hidden="true"><use href="#i-shield"/></svg>
+          <h3 class="card-title text-base font-bold">Startup Hash Verification</h3>
+        </div>
+        <p class="text-sm opacity-85">The cryptographic hashes of all runtime JavaScript modules and the tray script (<code class="font-mono text-xs">windows-tray.ps1</code>) are sealed with a key inside the encrypted vault.</p>
+        <p class="text-sm opacity-85">If an agent alters any script, Vaultgate detects the discrepancy at startup, <b>refuses to unlock</b> (<span class="stamp stamp-deny">VAULT_TAMPERED</span>), and displays a prominent red warning in the tray and portal.</p>
+        <div class="badge badge-outline badge-xs opacity-75">Backlog: Story 9.2</div>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="size-7 text-primary shrink-0" aria-hidden="true"><use href="#i-code"/></svg>
+          <h3 class="card-title text-base font-bold">Ed25519 Code Signatures</h3>
+        </div>
+        <p class="text-sm opacity-85">Builds bundle code into a single minified bundle (<code class="font-mono text-xs">dist/vaultgate.cjs</code>) signed with an Ed25519 private key in CI (<code class="font-mono text-xs">dist/vaultgate.sig</code>).</p>
+        <p class="text-sm opacity-85">The bootstrap loader (<code class="font-mono text-xs">bin/vaultgate.js</code>) verifies the signature against a hardcoded public key using <code class="font-mono text-xs">crypto.verify</code> before loading code. Tampered bundles are rejected immediately (€0 cost).</p>
+        <div class="badge badge-outline badge-xs opacity-75">docs/code-integriteit.md</div>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="size-7 text-primary shrink-0" aria-hidden="true"><use href="#i-lock"/></svg>
+          <h3 class="card-title text-base font-bold">Protected OS & Sigstore</h3>
+        </div>
+        <p class="text-sm opacity-85">Vaultgate installs into a system directory requiring UAC admin elevation to write, preventing regular user processes from modifying code.</p>
+        <p class="text-sm opacity-85">Public packages (<code class="font-mono text-xs">npx vaultgate</code>) are released with Sigstore / GitHub Actions OIDC provenance (<code class="font-mono text-xs">npm publish --provenance</code>), linking binaries directly to public commits.</p>
+        <div class="badge badge-outline badge-xs opacity-75">Backlog: Stories 7.1 & 7.3</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. The 22 Attack Matrix -->
+<section id="attacks" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">9. The 22 Attack Vectors: Proven by Code</h2>
+    <p class="max-w-3xl opacity-85">Executed against live running processes via <code class="font-mono">npm run attack</code>. 17 blocked unconditionally; 5 transparently mitigated with defense-in-depth.</p>
+  </div>
+
+  <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-100">
+    <table class="table text-sm">
+      <thead><tr><th>#</th><th>Attack Scenario</th><th>Adversary Goal</th><th>Vaultgate Countermeasure</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><b>A1</b></td><td>Read tool key file on disk</td><td>Impersonate agent tool</td><td>Tool keys stored solely as keyed HMACs; compromised keys only access granted scopes.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A2</b></td><td>Abuse device pairing flow</td><td>Connect unauthorized agent</td><td>Existing names rejected; pairing requires terminal code match & physical passkey touch.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A3</b></td><td>UI Automation / Synthetic Clicks</td><td>Silently click "Allow"</td><td>1.5s interactive UI delay; durable grants & sensitive secrets require FIDO2 physical touch.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr class="bg-base-200/50"><td><b>A4</b></td><td>Tampering with daemon or tray scripts</td><td>Bypass approval / modify proxy logic</td><td>Startup hash verification sealed by vault key (Story 9.2); Ed25519 signature checks; protected system install path (Story 0.8/7.1); npm publish --provenance (Story 7.1).</td><td><span class="badge badge-warning badge-sm">MITIGATED</span></td></tr>
+        <tr class="bg-base-200/50"><td><b>A5</b></td><td>Dump unlocked process memory</td><td>Extract vault key in RAM</td><td>Auto-lock timer on idle; zeroing sensitive Buffers; short in-memory exposure windows.</td><td><span class="badge badge-warning badge-sm">MITIGATED</span></td></tr>
+        <tr><td><b>A6</b></td><td>Offline cracking of vault files</td><td>Crack vault ciphertext</td><td>Random 32-byte vault key (not password-derived); Argon2id 256 MiB; FIDO2 PRF hardware keys.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A7</b></td><td>Steal portal browser cookies</td><td>Alter allowlists/grants</td><td>HttpOnly, SameSite=Strict, CSRF tokens, strict Host check (421), isolated browser window.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A8</b></td><td>Prompt injection: rogue destination host</td><td>Exfiltrate key to attacker server</td><td>Target host allowlist per secret; requests rejected before decryption (<span class="stamp stamp-deny text-xs">target-host-not-allowed</span>).</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A9</b></td><td>Prompt injection: leak in query params</td><td>Exfiltrate via URL access logs</td><td>Placement policy per secret (defaults to Authorization header only; query blocked).</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A10</b></td><td>Echo attack: API reflects key in reply</td><td>Exfiltrate key via agent reply</td><td>Real-time streaming scrubber catches raw, hex, and base64 encodings across chunk borders.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A11</b></td><td>Scope abuse on allowed API</td><td>Perform destructive write actions</td><td>Method and path prefix filtering per grant; popup displays exact method and destination path.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A12</b></td><td>Sabotage audit log (full disk / lock)</td><td>Perform untracked exfiltration</td><td>Write-ahead audit logging; fail-closed (<span class="stamp stamp-deny text-xs">audit-unavailable</span>); locks vault after 3 errors.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A13</b></td><td>Man-in-the-Middle / corporate inspection</td><td>Intercept decrypted keys</td><td>Strict TLS; TOFU certificate pinning. Changed cert issuer stops request during handshake.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A14</b></td><td>DNS rebinding / local webform CSRF</td><td>Hijack localhost proxy API</td><td>Host header verification (421 Misdirected Request); JSON-only Content-Type enforcement (415).</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A15</b></td><td>Brute-force tool key guessing</td><td>Guess valid agent keys</td><td>Throttling: after 5 failed keys in 3 min, client is tarpitted with exponential backoff delays.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr class="bg-base-200/50"><td><b>A16</b></td><td>Extend auto-lock with invalid traffic</td><td>Keep memory unlocked longer</td><td>Invalid tool keys or unauthorized requests do not reset the auto-lock inactivity countdown.</td><td><span class="badge badge-warning badge-sm">MITIGATED</span></td></tr>
+        <tr><td><b>A17</b></td><td>Rogue extension in portal browser</td><td>Keylog secret during creation</td><td>Portal opens in dedicated Chromium app-mode profile with <code class="font-mono text-xs">--disable-extensions</code>.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A18</b></td><td>OS clipboard / keystroke logging</td><td>Steal secret on manual entry</td><td>Passkey unlock (no password typed); secret values inputted once and never redisplayed.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A19</b></td><td>Hijack CLI helper script</td><td>Abuse paired tool keys</td><td>Tool keys only grant assigned permissions; single-click instant revocation in portal.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A20</b></td><td>Named pipe impersonation</td><td>Forge tray approval replies</td><td>Cryptographic one-time token exchanged over stdin on startup; rogue pipes rejected.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A21</b></td><td>Terminate proxy or tray process</td><td>Bypass mediation gate</td><td>Fail-closed network architecture: tools cannot route to targets without running proxy.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+        <tr><td><b>A22</b></td><td>Roll back vault file to old backup</td><td>Reactivate revoked tool keys</td><td>HMAC header manifest over all record versions: rollback detected as <span class="stamp stamp-deny text-xs">VAULT_TAMPERED</span>.</td><td><span class="badge badge-success badge-sm">BLOCKED</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 10. Code Reviewer & Security Auditor Checklist -->
+<section id="checklist" class="space-y-6 scroll-mt-20">
+  <div class="space-y-2">
+    <h2 class="text-3xl font-bold">10. Security Auditor & Code Reviewer Checklist</h2>
+    <p class="max-w-3xl opacity-85">Essential non-negotiable checks for any pull request or security review on the Vaultgate codebase.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold flex items-center gap-2"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-check"/></svg>1. Zero Plaintext Exposure</h3>
+      <p class="text-sm opacity-85">Secrets must reside in Node.js <code class="font-mono text-xs">Buffer</code> objects where possible and must never be converted to strings in logging or error formatting. All portal API routes must pass automated <code class="font-mono text-xs">findLeaks</code> assertions.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold flex items-center gap-2"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-check"/></svg>2. Mandatory Response Scrubbing</h3>
+      <p class="text-sm opacity-85">Every outbound response path emitting bytes to the client socket must pass through <code class="font-mono text-xs">src/scrub/</code>, scanning for raw values, hexadecimal encodings, and all 3 base64 offset alignments across chunk boundaries.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold flex items-center gap-2"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-check"/></svg>3. Fail-Closed Decisions</h3>
+      <p class="text-sm opacity-85">All decision branches in <code class="font-mono text-xs">src/policy/</code> must default to deny. Every outcome must yield a standard discrete rule name mapped to the official decision table.</p>
+    </div></div>
+    <div class="card bg-base-100 shadow-sm"><div class="card-body space-y-2">
+      <h3 class="card-title text-base font-bold flex items-center gap-2"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-check"/></svg>4. Write-Ahead Audit Log</h3>
+      <p class="text-sm opacity-85">Secret decryption must strictly follow audit log write confirmation. Missing or locked logs immediately halt the request with <code class="font-mono text-xs">audit-unavailable</code>.</p>
+    </div></div>
+  </div>
+</section>
+
+<div class="flex flex-wrap gap-2 pt-6">
+  <a class="btn btn-primary" href="index.html">Back to Overview</a>
+  <a class="btn btn-ghost" href="tour.html">Take the Portal Tour</a>
+  <a class="btn btn-ghost" href="https://github.com/kimVanRenterghemNew/Vaultgate">View on GitHub</a>
+</div>
+
+</main>
+
+<footer class="footer footer-center bg-base-100 p-6 text-sm">
+  <aside><p>© 2026 Kim Van Renterghem · Vaultgate is open source (<a class="link" href="https://github.com/kimVanRenterghemNew/Vaultgate/blob/main/LICENSE">GPL-3.0</a>) · no tracking and no third-party requests on this page · font: Atkinson Hyperlegible (OFL)</p></aside>
+</footer>
+</body>
+</html>
