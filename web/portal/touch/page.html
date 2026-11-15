@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaultgate</title>
+<style nonce="%NONCE%">%CSS%</style>
+</head>
+<body class="min-h-screen bg-base-300 flex items-center justify-center p-4">
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <symbol id="i-touch" viewBox="0 0 24 24"><path d="M12 11v4M8 9a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0M5 9a7 7 0 0 1 14 0v5a7 7 0 0 1-14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v4M9 13h.01M15 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- Eén venster dat één ding vraagt (mockup 06): de combinatie, wat er gebeurt, en onderaan weigeren of aanraken. -->
+<main class="focus-card w-full max-w-[480px] items-center text-center" data-layout="focus">
+  <div id="touch-orb" class="touch-orb w-fit"><svg class="size-11" aria-hidden="true"><use id="touch-icon" href="#i-touch"/></svg></div>
+  <h1 id="touch-title" class="text-2xl" data-i18n="touch.title"></h1>
+  <p id="touch-chain" class="hidden" data-testid="touch-chain"></p>
+  <p id="touch-question" class="ink-2 hidden" data-testid="touch-question"></p>
+  <dl id="touch-details" data-testid="touch-details" class="inline-grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border border-[var(--line)] bg-base-200 px-5 py-3 text-left text-sm hidden"></dl>
+  <p id="touch-code-hint" class="text-sm hidden" data-testid="touch-code-hint" data-i18n="touch.codeHint"></p>
+  <p id="touch-why" class="text-sm muted" data-i18n="touch.why"></p>
+  <div id="touch-message" class="w-full" data-testid="touch-message"></div>
+  <div id="touch-actions" class="flex w-full items-center justify-between gap-3 border-t border-[var(--line)] pt-4 hidden">
+    <button id="touch-deny" class="btn btn-sm btn-outline" data-testid="touch-deny" data-i18n="touch.deny"></button>
+    <button id="touch-confirm" class="btn btn-primary gap-2" data-testid="touch-confirm"><svg class="size-5" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="touch.confirm"></span></button>
+  </div>
+  <p id="touch-done" class="ink-2 hidden" data-testid="touch-done"></p>
+  <div class="flex w-full flex-col items-center gap-2">
+    <button id="touch-close" class="btn btn-outline btn-sm hidden" data-testid="touch-close" data-i18n="touch.close"></button>
+    <p id="touch-close-hint" class="text-xs muted hidden" data-i18n="touch.closeHint"></p>
+  </div>
+</main>
+<template data-template="chain"><span class="chain justify-center"><span class="chain-link"><svg aria-hidden="true"><use href="#i-bot"/></svg><span data-field="tool"></span></span><span class="chain-sep">→</span><span class="chain-link"><svg aria-hidden="true"><use href="#i-key"/></svg><span data-field="secret"></span></span><span class="chain-sep">→</span><span class="chain-link"><svg aria-hidden="true"><use href="#i-globe"/></svg><span data-field="host"></span></span></span></template>
+<template data-template="detail"><div class="contents"><dt class="muted" data-field="label"></dt><dd class="font-mono break-all" data-field="value"></dd></div></template>
+<template data-template="message-warning"><div role="alert" class="alert alert-soft alert-warning"><span data-field="text"></span></div></template>
+<template data-template="message-error"><div role="alert" class="alert alert-soft alert-error"><span data-field="text"></span></div></template>
+<script nonce="%NONCE%">%JS%</script>
+</body>
+</html>

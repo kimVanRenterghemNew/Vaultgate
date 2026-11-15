@@ -1,0 +1,99 @@
+/* Bron van de portaal-CSS (Tailwind CSS 4 + daisyUI 5), volgens de mockups v23 (docs/mockups/mockups.src.css). Thema
+   volgt het systeem: console-light als Windows in light mode staat, dracula in dark mode (keuze van de product owner).
+   `npm run build:css` maakt portal.generated.css, die gecommit wordt en inline (onder de CSP-nonce) in de pagina komt:
+   geen CDN, geen externe bron. Tailwind zoekt klassen alleen in de portaal-UI (source(none) + @source).
+   Opbouw: hier de thema's; styles/base.css de tokens en gedeelde onderdelen, styles/inspector.css lijst + detail,
+   styles/screens.css wat bij één scherm hoort. */
+@import "tailwindcss" source(none);
+@source "./**/*.html";
+@source "./components/*.js";
+@source "./core/*.js";
+@source "./touch/*.js";
+@plugin "daisyui" {
+  /* Geen ingebouwde thema's: console-light en dracula staan hieronder zelf gedefinieerd (default / prefersdark). */
+  themes: false;
+}
+
+/* Host Grotesk voor de interface; Atkinson Hyperlegible Mono alleen voor wat het systeem schreef (regelnamen, hosts,
+   tijden, codes als V4W4-ZAMP: 0/O en I/l onderscheiden). De @font-face zet src/portal/page.js ervoor (data-URI uit
+   web/portal/fonts/), zodat de CSP alleen `font-src data:` nodig heeft. */
+@theme {
+  --font-sans: "Host Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", Consolas, ui-monospace, monospace;
+}
+
+/* Licht: Console paper, warm papier, inkt bijna zwart; amber is de persoon (de actie), blauw het instrument. */
+@plugin "daisyui/theme" {
+  name: "console-light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98.6% 0.005 85);
+  --color-base-200: oklch(95.6% 0.007 85);
+  --color-base-300: oklch(92% 0.009 85);
+  --color-base-content: oklch(21% 0.01 60);
+  --color-primary: oklch(54% 0.14 70);
+  --color-primary-content: oklch(98.6% 0.005 85);
+  --color-secondary: oklch(50% 0.13 250);
+  --color-secondary-content: oklch(98.6% 0.005 85);
+  --color-accent: oklch(54% 0.14 70);
+  --color-accent-content: oklch(98.6% 0.005 85);
+  --color-neutral: oklch(84% 0.01 85);
+  --color-neutral-content: oklch(21% 0.01 60);
+  --color-info: oklch(48% 0.13 250);
+  --color-info-content: oklch(98.6% 0.005 85);
+  --color-success: oklch(48% 0.13 150);
+  --color-success-content: oklch(98.6% 0.005 85);
+  --color-warning: oklch(52% 0.12 70);
+  --color-warning-content: oklch(98.6% 0.005 85);
+  --color-error: oklch(52% 0.18 25);
+  --color-error-content: oklch(98.6% 0.005 85);
+  --radius-selector: 6px;
+  --radius-field: 6px;
+  --radius-box: 10px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Donker: Dracula op maat, zonder roze; één accent (teal) voor de primaire actie, de selectie en "wacht op jou". */
+@plugin "daisyui/theme" {
+  name: "dracula";
+  default: false;
+  prefersdark: true; /* anders wint onder Windows donker de ingebouwde (roze) dracula */
+  color-scheme: "dark";
+  --color-base-100: oklch(26.5% 0.02 277);
+  --color-base-200: oklch(23% 0.018 277);
+  --color-base-300: oklch(19.5% 0.016 277);
+  --color-base-content: oklch(95% 0.004 277);
+  --color-primary: oklch(76% 0.12 182);
+  --color-primary-content: oklch(18% 0.03 200);
+  --color-secondary: oklch(77% 0.09 252);
+  --color-secondary-content: oklch(17% 0.025 255);
+  --color-accent: oklch(76% 0.12 182);
+  --color-accent-content: oklch(18% 0.03 200);
+  --color-neutral: oklch(36% 0.025 277);
+  --color-neutral-content: oklch(92% 0.005 277);
+  --color-info: oklch(80% 0.08 230);
+  --color-info-content: oklch(18% 0.02 230);
+  --color-success: oklch(79% 0.14 150);
+  --color-success-content: oklch(18% 0.04 150);
+  --color-warning: oklch(84% 0.12 85);
+  --color-warning-content: oklch(20% 0.03 85);
+  --color-error: oklch(72% 0.17 25);
+  --color-error-content: oklch(16% 0.04 25);
+  --radius-selector: 6px;
+  --radius-field: 6px;
+  --radius-box: 10px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@import "./styles/base.css";
+@import "./styles/inspector.css";
+@import "./styles/screens.css";

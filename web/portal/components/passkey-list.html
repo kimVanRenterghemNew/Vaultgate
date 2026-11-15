@@ -1,0 +1,38 @@
+<div class="space-y-3">
+  <div id="pk-list" class="rows" data-testid="passkeys-table" data-i18n-aria-label="portal.passkeys.yours"></div>
+  <div id="pk-recommend" class="note note-signal hidden" data-testid="pk-recommend">
+    <svg aria-hidden="true"><use href="#i-phone"/></svg>
+    <div class="flex-1"><p class="font-medium text-[var(--ink)]"><span data-i18n="portal.passkeys.another"></span> <span class="tag tag-signal ml-1" data-i18n="portal.passkeys.recommended"></span></p><p data-i18n="portal.passkeys.anotherHelp"></p></div>
+  </div>
+</div>
+
+<!-- Een rij: in Authentication kies je ze (detail rechts), in het welkom is het een gewone lijst. -->
+<template data-template="item">
+  <div class="row" data-testid="passkey-row">
+    <span class="row-icon"><svg aria-hidden="true"><use data-icon/></svg></span>
+    <span class="min-w-0"><span class="row-title" data-field="title" data-testid="passkey-name"></span><span class="row-note" data-field="note"></span></span>
+    <span data-if="prf" class="tag tag-signal" data-i18n="portal.passkeys.unlocks"></span><span data-if-not="prf" class="tag tag-warn" data-i18n="portal.passkeys.noPrf"></span>
+  </div>
+</template>
+<template data-template="detail">
+  <article class="detail">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h2 class="text-2xl" data-field="title"></h2>
+        <p data-if="prf" class="reading-note" data-i18n="portal.passkeys.prfNote"></p>
+        <p data-if-not="prf" class="reading-note" data-i18n="portal.passkeys.noPrfNote"></p>
+      </div>
+      <div class="flex-none" data-field="pause"></div>
+    </div>
+    <dl class="facts">
+      <dt data-i18n="portal.keys.kind"></dt><dd data-field="kind"></dd>
+      <dt data-i18n="portal.passkeys.vault"></dt><dd><span data-if="prf" class="tag tag-signal" data-i18n="portal.passkeys.unlocks"></span><span data-if-not="prf" class="tag tag-warn" data-i18n="portal.passkeys.noPrf"></span></dd>
+      <dt data-i18n="portal.passkeys.added"></dt><dd class="mono" data-field="added"></dd>
+      <dt data-if="used" data-i18n="portal.passkeys.used"></dt><dd data-if="used" class="mono" data-field="used"></dd>
+    </dl>
+    <div class="detail-actions">
+      <button class="btn btn-sm btn-ghost text-[var(--bad)] gap-1" data-action="remove" data-testid="passkey-remove"><svg class="size-4" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="portal.passkeys.remove"></span></button>
+      <button class="btn btn-sm btn-outline gap-1" data-action="rename" data-testid="passkey-rename"><svg class="size-4" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.passkeys.rename"></span></button>
+    </div>
+  </article>
+</template>

@@ -1,0 +1,112 @@
+<div class="work-head flex-wrap">
+  <div>
+    <h1 class="screen-title" data-i18n="portal.tabs.keys"></h1>
+    <p data-i18n="portal.keys.intro"></p>
+  </div>
+  <div class="flex items-center gap-6">
+    <div class="figures">
+      <span class="figure"><b id="tools-active" data-testid="tools-active">0</b><span data-i18n="portal.keys.active"></span></span>
+      <span class="figure"><b id="tools-revoked" data-testid="tools-revoked">0</b><span data-i18n="portal.keys.revoked"></span></span>
+    </div>
+    <button id="tools-create" class="btn btn-primary btn-sm gap-1.5" data-testid="tools-create"><svg class="size-4" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.keys.create"></span></button>
+  </div>
+</div>
+<!-- Een tool die wil koppelen, wacht hier op jou (zoals de mockups: bovenaan Virtual keys). -->
+<div id="tools-waiting" class="note note-signal hidden" data-testid="tools-waiting">
+  <svg aria-hidden="true"><use href="#i-link"/></svg>
+  <div class="min-w-0 flex-1 space-y-2">
+    <p class="font-medium text-[var(--ink)]" data-i18n="portal.keys.waiting"></p>
+    <p data-i18n="portal.keys.waitingHelp"></p>
+    <div id="tools-device-slot"></div>
+  </div>
+</div>
+<!-- Create key: een dialoog (mockup 08) met ks-key-create, hetzelfde component als stap 3 van het welkom. -->
+<dialog id="tools-create-card" class="modal" data-testid="tools-create-card" aria-labelledby="tools-create-title">
+  <div class="modal-box max-w-2xl max-h-[90vh] overflow-y-auto">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="tools-create-title" class="mb-4 pr-8 text-xl" data-i18n="portal.keys.newTitle"></h3>
+    <div id="tools-ways-slot"></div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+<div class="split h-[calc(100vh-15rem)] min-h-[420px]">
+  <section class="panel" aria-labelledby="tools-head">
+    <div class="panel-head"><h2 id="tools-head" data-i18n="portal.keys.tools"></h2><span id="tools-count"></span></div>
+    <div id="tools" class="panel-body rows" role="listbox" data-testid="tools-list" data-i18n-aria-label="portal.keys.tools"></div>
+  </section>
+  <section id="tools-detail" class="panel" data-testid="tool-detail" data-i18n-aria-label="portal.tabs.keys"></section>
+</div>
+
+<dialog id="tools-edit" class="modal" data-testid="tool-edit-dialog">
+  <div class="modal-box max-w-lg">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" data-i18n-aria-label="portal.keys.close"><span aria-hidden="true">✕</span></button></form>
+    <h3 id="te-title" class="font-bold text-lg"></h3>
+    <fieldset class="fieldset mt-3"><label class="label" for="te-name" data-i18n="portal.keys.editName"></label><input id="te-name" class="input w-full font-mono" data-testid="tool-edit-name"></fieldset>
+    <label class="flex items-center gap-3 text-sm mt-3"><input id="te-other" type="checkbox" class="toggle toggle-primary toggle-sm" data-testid="tool-edit-other"><span data-i18n="portal.keys.editOther"></span></label>
+    <input id="te-clients" class="input w-full font-mono mt-2 fade-in hidden" placeholder="192.168.1.20, 10.0.0.0/24" data-testid="tool-edit-clients" data-i18n-aria-label="portal.keys.clients">
+    <fieldset class="fieldset mt-3"><label class="label" for="te-reask" data-i18n="portal.keys.reask"></label><select id="te-reask" class="select w-full" data-testid="tool-edit-reask"></select><p class="label text-xs whitespace-normal" data-i18n="portal.keys.reaskHelp"></p></fieldset>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="te-save" class="btn btn-primary" data-testid="tool-edit-save" data-i18n="portal.keys.editSave"></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Eigen sjablonen in een eigen vak: "Create key" bevat andere onderdelen met een sjabloon "row". -->
+<div id="tools-templates" hidden>
+<template data-template="row">
+  <button type="button" role="option" class="row" data-testid="tool-row-{name}">
+    <span data-if="mcp" class="row-icon"><svg aria-hidden="true"><use href="#i-plug"/></svg></span>
+    <span data-if-not="mcp" class="row-icon"><svg aria-hidden="true"><use href="#i-globe"/></svg></span>
+    <span class="min-w-0">
+      <span data-if-not="revoked" class="row-title mono" data-field="name"></span><span data-if="revoked" class="row-title mono muted line-through" data-field="name"></span>
+      <span data-if="mcp" class="row-note" data-i18n="portal.keys.kindMcp"></span><span data-if-not="mcp" class="row-note" data-i18n="portal.keys.kindWeb"></span>
+    </span>
+    <span data-if="revoked" class="tag tag-bad" data-i18n="portal.keys.revoked"></span><span data-if-not="revoked" class="tag" data-i18n="portal.keys.active"></span>
+  </button>
+</template>
+<template data-template="detail">
+  <article class="detail">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p class="reading" data-field="name" translate="no"></p>
+        <!-- Wat Vaultgate voor deze key doet, en wat niet (eerlijk restrisico). -->
+        <p data-if="rotating" class="reading-note" data-testid="tool-rotation-help-{name}" data-i18n="portal.keys.rotatingHelp"></p>
+        <p data-if-not="rotating" class="reading-note" data-testid="tool-rotation-help-{name}" data-i18n="portal.keys.manualHelp"></p>
+      </div>
+      <!-- Rechtsboven: het blokkeermenu klapt dan binnen het detailvak open (onderaan of links knipt het scrollvak het af). -->
+      <div class="flex-none" data-field="pause"></div>
+    </div>
+    <dl class="facts">
+      <dt data-i18n="portal.keys.kind"></dt><dd><span data-if="mcp" data-i18n="portal.keys.kindMcp"></span><span data-if-not="mcp" data-i18n="portal.keys.kindWeb"></span></dd>
+      <dt data-i18n="portal.keys.fact.from"></dt><dd data-field="clients"></dd>
+      <dt data-i18n="portal.keys.domains"></dt><dd class="mono" data-field="domains"></dd>
+      <dt data-i18n="portal.keys.fact.key"></dt><dd><span data-field="since"></span>
+        <span data-if="rotating" class="tag tag-signal ml-1" data-testid="tool-rotation-{name}" data-i18n="portal.keys.rotating"></span>
+        <span data-if-not="rotating" class="tag tag-warn ml-1" data-testid="tool-rotation-{name}" data-i18n="portal.keys.manual"></span></dd>
+    </dl>
+    <div>
+      <p class="section-label" data-i18n="portal.keys.grants"></p>
+      <div class="rows rounded-lg border border-[var(--line)]" data-field="grants"></div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-sm btn-ghost text-[var(--bad)]" data-if-not="revoked" data-action="revoke" data-testid="tool-revoke-{name}" data-i18n="portal.keys.revoke"></button>
+      <button class="btn btn-sm btn-outline gap-1" data-if="revoked" data-action="reactivate" data-testid="tool-reactivate-{name}"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.keys.reactivate"></span></button>
+      <div class="flex gap-2">
+        <button class="btn btn-sm btn-outline gap-1.5" data-action="edit" data-testid="tool-edit-{name}"><svg class="size-4" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.keys.edit"></span></button>
+        <button class="btn btn-sm btn-primary gap-1.5" data-action="rotate" data-testid="tool-rotate-{name}"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.keys.rotate"></span></button>
+      </div>
+    </div>
+  </article>
+</template>
+<template data-template="grant">
+  <div class="flex items-center justify-between gap-3 px-3 py-2">
+    <span class="chain"><span class="chain-link"><svg aria-hidden="true"><use href="#i-key"/></svg><span data-field="secret"></span></span><span class="chain-sep">→</span><span class="chain-link"><svg aria-hidden="true"><use href="#i-globe"/></svg><span data-field="host"></span></span></span>
+    <span class="text-sm muted" data-field="left"></span>
+  </div>
+</template>
+<template data-template="no-grants"><p class="px-3 py-2 text-sm muted" data-i18n="portal.keys.noDomains"></p></template>
+<template data-template="empty"><p class="p-4 muted" data-testid="tools-empty"><span data-i18n="portal.keys.empty"></span></p></template>
+<template data-template="pick"><p class="p-6 muted" data-i18n="portal.keys.pick"></p></template>
+</div>

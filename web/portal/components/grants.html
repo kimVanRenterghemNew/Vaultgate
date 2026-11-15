@@ -1,0 +1,125 @@
+<div class="work-head flex-wrap">
+  <div class="min-w-0">
+    <h1 class="screen-title" data-i18n="portal.tabs.grants"></h1>
+    <p class="max-w-[68ch]" data-i18n="portal.grants.intro"></p>
+  </div>
+  <div class="flex items-center gap-6">
+    <div class="figures">
+      <span class="figure"><b id="grants-active" data-testid="grants-active">0</b><span data-i18n="portal.keys.active"></span></span>
+      <span class="figure"><b id="grants-expired" data-testid="grants-expired">0</b><span data-i18n="portal.grants.expired"></span></span>
+    </div>
+    <button id="g-open" class="btn btn-primary btn-sm gap-1.5" data-testid="g-open"><svg class="size-4" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.grants.addTitle"></span></button>
+  </div>
+</div>
+<div class="split h-[calc(100vh-15rem)] min-h-[420px]">
+  <section class="panel" aria-labelledby="grants-head">
+    <div class="panel-head">
+      <h2 id="grants-head" data-i18n="portal.tabs.grants"></h2>
+      <div class="flex items-center gap-2">
+        <select id="g-filter-tool" class="select select-sm w-36 font-mono" data-testid="g-filter-tool" data-i18n-aria-label="portal.grants.filterTool"></select>
+        <select id="g-filter-secret" class="select select-sm w-36 font-mono" data-testid="g-filter-secret" data-i18n-aria-label="portal.grants.filterSecret"></select>
+      </div>
+    </div>
+    <div id="grants" class="panel-body rows" role="listbox" data-testid="grants-list" data-i18n-aria-label="portal.tabs.grants"></div>
+    <p class="panel-foot muted" data-i18n="portal.grants.footer"></p>
+  </section>
+  <section id="grant-detail" class="panel" data-testid="grant-detail" data-i18n-aria-label="portal.tabs.grants"></section>
+</div>
+
+<!-- Een toekenning toevoegen: niets staat vooraf ingevuld; het domein kies je uit de domeinen van het secret. -->
+<dialog id="g-dialog" class="modal" data-testid="g-dialog" aria-labelledby="g-dialog-title">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="g-dialog-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.grants.addTitle"></span></h3>
+    <p class="text-sm opacity-75 mt-1" data-i18n="portal.grants.addIntro"></p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+      <fieldset class="fieldset"><label class="label" for="g-tool" data-i18n="portal.common.tool"></label><select id="g-tool" class="select w-full font-mono" data-testid="g-tool"></select></fieldset>
+      <fieldset class="fieldset"><label class="label" for="g-secret" data-i18n="portal.common.secret"></label><select id="g-secret" class="select w-full font-mono" data-testid="g-secret"></select></fieldset>
+      <fieldset class="fieldset"><label class="label" for="g-host" data-i18n="portal.secrets.domain"></label><select id="g-host" class="select w-full font-mono" data-testid="g-host"></select></fieldset>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <fieldset class="fieldset"><label class="label" for="g-mode" data-i18n="portal.common.onUse"></label><select id="g-mode" class="select w-full" data-testid="g-mode">
+        <option value="silent" data-i18n="portal.mode.silentLong"></option><option value="notify" data-i18n="portal.mode.notifyLong"></option><option value="confirm" data-i18n="portal.mode.confirmLong"></option>
+      </select></fieldset>
+      <fieldset class="fieldset"><label class="label" for="g-duration" data-i18n="portal.grants.validFor"></label><select id="g-duration" class="select w-full" data-testid="g-duration">
+        <option value="1800000" data-i18n="portal.duration.30m"></option><option value="3600000" data-i18n="portal.duration.1h"></option><option value="14400000" data-i18n="portal.duration.4h"></option><option value="0" data-i18n="portal.duration.always"></option>
+      </select><p class="label text-xs whitespace-normal" data-i18n="portal.grants.validHelp"></p></fieldset>
+    </div>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="g-add" class="btn btn-primary gap-2" data-testid="g-add"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.grants.add"></span></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Edit: wat er bij gebruik gebeurt, en of de looptijd blijft of verlengd wordt. -->
+<dialog id="ge-dialog" class="modal" data-testid="grant-edit-dialog" aria-labelledby="ge-title">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="ge-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.grants.editTitle"></span></h3>
+    <p id="ge-chain" class="mt-2"></p>
+    <p id="ge-left" class="mt-2"></p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+      <fieldset class="fieldset"><label class="label" for="ge-mode" data-i18n="portal.common.onUse"></label><select id="ge-mode" class="select w-full" data-testid="grant-edit-mode">
+        <option value="silent" data-i18n="portal.mode.silentLong"></option><option value="notify" data-i18n="portal.mode.notifyLong"></option><option value="confirm" data-i18n="portal.mode.confirmLong"></option>
+      </select></fieldset>
+      <fieldset class="fieldset"><label class="label" for="ge-extend" data-i18n="portal.grants.extendBy"></label><select id="ge-extend" class="select w-full" data-testid="grant-edit-extend">
+        <option value="keep" data-i18n="portal.grants.keep"></option><option value="1800000" data-i18n="portal.grants.plus30m"></option><option value="3600000" data-i18n="portal.grants.plus1h"></option><option value="14400000" data-i18n="portal.grants.plus4h"></option><option value="0" data-i18n="portal.duration.always"></option>
+      </select></fieldset>
+    </div>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="ge-save" class="btn btn-primary gap-2" data-testid="grant-edit-save"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.keys.editSave"></span></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<template data-template="chain">
+  <span class="chain"><span class="chain-link"><svg aria-hidden="true"><use href="#i-bot"/></svg><span data-field="tool"></span></span><span class="chain-sep">→</span><span class="chain-link"><svg aria-hidden="true"><use href="#i-key"/></svg><span data-field="secret"></span></span><span class="chain-sep">→</span><span class="chain-link"><svg aria-hidden="true"><use href="#i-globe"/></svg><span data-field="host"></span></span></span>
+</template>
+<template data-template="row">
+  <button type="button" role="option" class="row" data-testid="grant-row-{id}">
+    <span data-if-not="expired" class="row-icon"><svg aria-hidden="true"><use href="#i-bot"/></svg></span>
+    <span data-if="expired" class="row-icon"><svg aria-hidden="true"><use href="#i-clock"/></svg></span>
+    <span class="min-w-0"><span class="row-title"><span data-field="tool"></span> <span class="muted font-normal" data-i18n="portal.grants.uses"></span> <span data-field="secret"></span></span><span class="row-sub" data-field="host"></span></span>
+    <span data-if="forever" class="tag" data-i18n="portal.duration.always"></span><span data-if="running" class="tag tag-signal" data-field="left"></span><span data-if="expired" class="tag tag-warn" data-i18n="portal.grants.expired"></span>
+  </button>
+</template>
+<template data-template="detail">
+  <article class="detail">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p data-if="forever" class="reading reading-ok" data-i18n="portal.duration.always"></p>
+        <p data-if="running" class="reading reading-cool" data-field="left"></p>
+        <p data-if="expired" class="reading reading-warn" data-i18n="portal.grants.expired"></p>
+        <p class="reading-note" data-field="note"></p>
+      </div>
+      <div class="flex flex-none flex-wrap justify-end gap-1"><span class="contents" data-field="silence"></span><span class="contents" data-field="pause"></span></div>
+    </div>
+    <span data-field="chain"></span>
+    <dl class="facts">
+      <dt data-i18n="portal.common.onUse"></dt><dd data-field="mode"></dd>
+      <dt data-i18n="portal.grants.fact.origin"></dt><dd data-field="origin"></dd>
+    </dl>
+    <p data-if="temporary" class="note note-signal" data-testid="grant-temporary-{id}"><svg aria-hidden="true"><use href="#i-clock"/></svg><span><b class="font-medium" data-field="temporaryLeft"></b> <span data-field="temporaryText"></span></span></p>
+    <div class="detail-actions">
+      <button class="btn btn-sm btn-ghost text-[var(--bad)] gap-1" data-action="revoke" data-testid="grant-revoke-{id}"><svg class="size-4" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="portal.grants.revoke"></span></button>
+      <div class="flex gap-2">
+        <button data-if="temporary" class="btn btn-sm btn-outline gap-1" data-action="endTemporary" data-testid="grant-end-temporary-{id}"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.grants.endTemporary"></span></button>
+        <button class="btn btn-sm btn-primary gap-1.5" data-action="edit" data-testid="grant-edit-{id}"><svg class="size-4" aria-hidden="true"><use data-icon href="#i-edit"/></svg><span data-field="editLabel"></span></button>
+      </div>
+    </div>
+  </article>
+</template>
+<template data-template="left">
+  <span class="flex items-center gap-2">
+    <span data-if="forever" class="tag"><svg class="size-3" aria-hidden="true"><use href="#i-clock"/></svg><span data-i18n="portal.duration.always"></span></span>
+    <span data-if="running" class="tag tag-signal"><svg class="size-3" aria-hidden="true"><use href="#i-clock"/></svg><span data-field="left"></span></span>
+    <span data-if="expired" class="tag tag-warn"><svg class="size-3" aria-hidden="true"><use href="#i-clock"/></svg><span data-i18n="portal.grants.expired"></span></span>
+    <span class="text-xs muted" data-field="origin"></span>
+  </span>
+</template>
+<template data-template="empty"><p class="p-4 muted" data-testid="grants-empty" data-i18n="portal.grants.empty"></p></template>
+<template data-template="pick"><p class="p-6 muted" data-i18n="portal.grants.pick"></p></template>

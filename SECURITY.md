@@ -6,7 +6,7 @@ You can report security findings, improvements, or exploit vectors through any o
 - **GitHub Issues / Tickets:** Open an issue or ticket directly in this repository.
 - **Pull Requests (PR):** Submit a PR with a patch or test reproducing the issue.
 - **GitHub Private Vulnerability Reporting:** Use GitHub's private vulnerability advisory workflow on this repository.
-- **Email:** Send details directly to `kim.van.renterghem@gmail.com`.
+- **Email:** Send details directly to `security@vaultgate.dev` or use GitHub Security Advisories.
 
 Please include (where applicable):
 - A description of the vulnerability and attack scenario.
@@ -22,6 +22,6 @@ We acknowledge receipt of reports within 48 hours and welcome community reviews 
 
 Vaultgate is built upon a fail-closed, zero-knowledge architecture designed specifically to guard secrets against compromised AI agents, prompt injection, and untrusted local scripts.
 
-For detailed technical documentation on how Vaultgate ensures maximum security, including the 22-vector attack bench, cryptographic key hierarchy, FIDO2 PRF derivation, and real-time response scrubbing, please refer to:
+Every technique in the design, the attack bench (24 attacks, 21 blocked, 3 open with their reason) and what is not covered: **[How Vaultgate is secured](https://vaultgate.github.io/Vaultgate/security.html)**.
 
-👉 **[Vaultgate Security Architecture & Technical Threat Model](docs/security-architecture.md)**
+The longer technical reference: **[Security Architecture & Threat Model](docs/security-architecture.md)**.

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaultgate</title>
+<style nonce="%NONCE%">%CSS%</style>
+</head>
+<body class="min-h-screen bg-base-200">
+
+<ks-icons></ks-icons>
+<ks-ask></ks-ask>
+<ks-header class="navbar bg-base-100 shadow-sm gap-1 px-4"></ks-header>
+
+<main class="mx-auto max-w-6xl space-y-4 p-4 md:p-6">
+  <div id="message" data-testid="message"></div>
+  <div id="window-warning" role="alert" class="alert alert-warning alert-soft hidden" data-testid="window-warning"><span><span data-i18n="portal.windowWarning"></span> <code class="font-mono" translate="no" data-cli="portal"></code></span></div>
+
+  <ks-rollback id="rollback" class="hidden block" data-testid="rollback"></ks-rollback>
+  <ks-integrity id="integrity" class="hidden block" data-testid="integrity"></ks-integrity>
+  <ks-welcome id="view-welcome" class="hidden block" data-testid="view-welcome"></ks-welcome>
+  <ks-recovery id="view-recovery" class="hidden" data-testid="view-recovery"></ks-recovery>
+  <ks-login id="view-login" class="hidden" data-testid="view-login"></ks-login>
+  <ks-unlock id="view-unlock" class="hidden" data-testid="view-unlock"></ks-unlock>
+  <ks-main id="view-main" class="hidden space-y-4" data-testid="view-main"></ks-main>
+</main>
+<!-- De dialoog met een nieuwe key: één in de pagina, voor het formulier (welkom, Create key) en voor Rotate. -->
+<ks-key-config id="key-config"></ks-key-config>
+
+<template data-template="message-info"><div role="alert" class="alert alert-soft alert-info"><span data-field="text"></span></div></template>
+<template data-template="message-success"><div role="alert" class="alert alert-soft alert-success"><span data-field="text"></span></div></template>
+<template data-template="message-warning"><div role="alert" class="alert alert-soft alert-warning"><span data-field="text"></span></div></template>
+<template data-template="message-error"><div role="alert" class="alert alert-soft alert-error"><span data-field="text"></span></div></template>
+<template data-template="ceremony-busy"><span class="flex items-center gap-2"><span class="loading loading-spinner loading-sm" aria-hidden="true"></span><span data-i18n="portal.common.waitingForKey"></span></span></template>
+
+<script nonce="%NONCE%">%JS%</script>
+</body>
+</html>
