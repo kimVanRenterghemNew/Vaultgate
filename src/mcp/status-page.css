@@ -1,0 +1,179 @@
+:root {
+    --bg: #1e1f29;
+    --card-bg: #282a36;
+    --card-sub: #21222c;
+    --text-main: #f8f8f2;
+    --text-muted: #9ba8c8;
+    --primary: #8be9fd;
+    --accent: #50fa7b;
+    --border: #44475a;
+    --border-light: #343746;
+    --badge-bg: rgba(80, 250, 123, 0.15);
+    --badge-text: #50fa7b;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 32px 16px;
+    font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+    line-height: 1.5;
+}
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.status-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+.protocol-tag {
+    font-family: "Atkinson Hyperlegible Mono", Consolas, monospace;
+    font-size: 12px;
+    background: var(--card-sub);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--text-muted);
+}
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+.card h2 {
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+.endpoint-box {
+    background: var(--card-sub);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 12px;
+}
+.endpoint-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+.endpoint-url {
+    color: var(--primary);
+    text-decoration: none;
+    font-family: "Atkinson Hyperlegible Mono", Consolas, monospace;
+    font-size: 13px;
+    word-break: break-all;
+}
+.endpoint-url:hover { text-decoration: underline; }
+.command-box {
+    background: var(--card-sub);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-family: "Atkinson Hyperlegible Mono", Consolas, monospace;
+    font-size: 13px;
+    color: var(--accent);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+}
+th {
+    border-bottom: 1px solid var(--border);
+    padding: 8px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+td {
+    border-bottom: 1px solid var(--border-light);
+    padding: 12px 10px;
+    vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+.tool-name code {
+    font-family: "Atkinson Hyperlegible Mono", Consolas, monospace;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 13px;
+}
+.tool-desc {
+    color: var(--text-muted);
+    max-width: 320px;
+}
+.tool-params {
+    font-size: 12px;
+}
+.param-row {
+    margin-bottom: 4px;
+}
+.code-badge {
+    font-family: "Atkinson Hyperlegible Mono", Consolas, monospace;
+    font-weight: 600;
+    color: var(--text-main);
+    background: var(--card-sub);
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+}
+.param-type {
+    color: var(--text-muted);
+}
+.text-muted { color: var(--text-muted); }

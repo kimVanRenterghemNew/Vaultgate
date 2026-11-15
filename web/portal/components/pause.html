@@ -1,0 +1,17 @@
+<template data-template="paused">
+  <span class="flex flex-wrap items-center gap-1">
+    <span class="badge badge-sm badge-soft badge-warning gap-1" data-testid="{id}-until"><svg class="size-3" aria-hidden="true"><use data-icon href="#i-lock"/></svg><span data-field="text"></span></span>
+    <button type="button" class="btn btn-sm btn-ghost gap-1" data-action="resume" data-testid="{id}-resume"><svg class="size-4" aria-hidden="true" data-touch><use href="#i-touch"/></svg><span data-field="resume"></span></button>
+  </span>
+</template>
+<template data-template="choose">
+  <details class="dropdown dropdown-end">
+    <summary class="btn btn-sm btn-ghost gap-1" data-testid="{id}"><svg class="size-4" aria-hidden="true"><use data-icon href="#i-lock"/></svg><span data-field="label"></span></summary>
+    <ul class="dropdown-content menu z-50 mt-1 p-2 shadow bg-base-100 rounded-box w-52 border border-base-content/10">
+      <li><button type="button" data-action="15m" data-testid="{id}-15m" data-i18n="portal.pause.15m"></button></li>
+      <li><button type="button" data-action="1h" data-testid="{id}-1h" data-i18n="portal.pause.1h"></button></li>
+      <li><button type="button" data-action="tomorrow" data-testid="{id}-tomorrow" data-i18n="portal.pause.tomorrow"></button></li>
+      <li data-if="forever"><button type="button" data-action="forever" data-testid="{id}-forever" data-i18n="portal.pause.forever"></button></li>
+    </ul>
+  </details>
+</template>

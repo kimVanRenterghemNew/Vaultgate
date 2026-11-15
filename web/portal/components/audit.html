@@ -1,0 +1,80 @@
+<div class="work-head flex-wrap">
+  <div>
+    <h1 class="screen-title" data-i18n="portal.audit.title"></h1>
+    <p id="audit-intro" class="max-w-[68ch]" data-testid="audit-intro"></p>
+  </div>
+  <div class="figures" data-testid="stats">
+    <span class="figure"><b id="stat-allowed" data-testid="stat-allowed">0</b><span data-i18n="portal.audit.statAllowed"></span></span>
+    <span class="figure"><b id="stat-stopped" data-testid="stat-stopped">0</b><span data-i18n="portal.audit.statStopped"></span></span>
+    <span class="figure"><b id="stat-scrubbed" data-testid="stat-scrubbed">0</b><span data-i18n="portal.audit.statScrubbed"></span></span>
+  </div>
+</div>
+<ks-waiting id="waiting" class="block" data-testid="waiting"></ks-waiting>
+<div class="split h-[calc(100vh-17rem)] min-h-[440px]">
+  <section class="panel" aria-labelledby="audit-head">
+    <div class="panel-head">
+      <h2 id="audit-head" data-i18n="portal.audit.latest"></h2>
+      <div class="flex items-center gap-2">
+        <select id="a-decision" class="select select-sm w-40" data-testid="a-decision" data-i18n-aria-label="portal.audit.decision">
+          <option value="" data-i18n="portal.audit.all"></option><option value="allow" data-i18n="portal.audit.allowed"></option><option value="deny" data-i18n="portal.audit.stopped"></option><option value="admin" data-i18n="portal.audit.admin"></option>
+        </select>
+        <details id="a-more" class="dropdown dropdown-end">
+          <summary class="btn btn-sm btn-ghost" data-testid="a-more" data-i18n="portal.audit.filter"></summary>
+          <div class="dropdown-content z-10 mt-1 w-64 rounded-box border border-[var(--line-2)] bg-base-100 p-3 space-y-2">
+            <input id="a-tool" class="input input-sm w-full" data-testid="a-tool" data-i18n-placeholder="portal.common.tool" data-i18n-aria-label="portal.common.tool">
+            <input id="a-secret" class="input input-sm w-full" data-testid="a-secret" data-i18n-placeholder="portal.common.secret" data-i18n-aria-label="portal.common.secret">
+            <input id="a-host" class="input input-sm w-full" data-testid="a-host" data-i18n-placeholder="portal.common.host" data-i18n-aria-label="portal.common.host">
+            <button id="a-go" class="btn btn-sm btn-primary w-full" data-testid="a-go" data-i18n="portal.audit.filter"></button>
+          </div>
+        </details>
+      </div>
+    </div>
+    <ul id="audit" class="panel-body rows" role="listbox" data-testid="audit-table" data-i18n-aria-label="portal.audit.latest"></ul>
+    <p id="audit-empty" class="muted hidden p-4" data-testid="audit-empty" data-i18n="portal.audit.empty"></p>
+  </section>
+  <section id="audit-detail" class="panel" data-testid="audit-detail" data-i18n-aria-label="portal.audit.decision"></section>
+</div>
+
+<template data-template="entry">
+  <li role="none"><button type="button" role="option" class="row" data-testid="audit-row" aria-selected="false">
+    <span class="row-time" data-field="time"></span>
+    <span class="min-w-0"><span class="row-title"><span data-field="who"></span> <span data-if="grouped" class="muted font-normal mono" data-testid="audit-count" data-field="count"></span></span><span class="row-sub" data-field="where"></span></span>
+    <span data-field="stamp"></span>
+  </button></li>
+</template>
+<template data-template="detail">
+  <article class="detail">
+    <div>
+      <p class="reading" data-field="rule" translate="no"></p>
+      <p class="reading-note" data-field="sentence"></p>
+    </div>
+    <span data-if="hasChain" class="chain">
+      <span class="chain-link"><svg aria-hidden="true"><use href="#i-bot"/></svg><span data-field="tool"></span></span>
+      <span data-if="secret" class="chain-sep">→</span><span data-if="secret" class="chain-link"><svg aria-hidden="true"><use href="#i-key"/></svg><span data-field="secret"></span></span>
+      <span data-if="host" class="chain-sep">→</span><span data-if="host" class="chain-link" data-chain="host"><svg aria-hidden="true"><use href="#i-globe"/></svg><span data-field="host"></span></span>
+    </span>
+    <dl class="facts">
+      <dt data-i18n="portal.audit.fact.when"></dt><dd class="mono" data-field="when"></dd>
+      <dt data-if="grouped" data-i18n="portal.audit.fact.repeat"></dt><dd data-if="grouped" data-field="repeat"></dd>
+      <dt data-if="hasRequest" data-i18n="portal.audit.fact.request"></dt><dd data-if="hasRequest" class="mono" data-field="request"></dd>
+      <dt data-if="client" data-i18n="portal.audit.fact.from"></dt><dd data-if="client" class="mono" data-field="client"></dd>
+      <dt data-if="admin" data-i18n="portal.audit.fact.change"></dt><dd data-if="admin" data-testid="audit-change" data-field="change"></dd>
+      <dt data-if="inspected" data-i18n="portal.audit.fact.connection"></dt><dd data-if="inspected"><span class="tag tag-warn" data-field="inspectedText"></span></dd>
+    </dl>
+    <div class="detail-actions">
+      <span></span>
+      <div class="flex gap-2">
+        <button data-if="renew" class="btn btn-sm btn-primary" data-action="renew" data-testid="audit-renew" data-i18n="portal.audit.renew"></button>
+        <button data-if="createSecret" class="btn btn-sm btn-primary" data-action="createSecret" data-testid="audit-create-secret" data-i18n="portal.audit.createSecret"></button>
+        <button data-if="allowHost" class="btn btn-sm btn-outline" data-action="allowHost" data-testid="audit-allow-host" data-i18n="portal.audit.allowHost"></button>
+        <button data-if="place" class="btn btn-sm btn-outline gap-1" data-action="place" data-testid="audit-allow-place"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.audit.allowPlace"></span></button>
+      </div>
+    </div>
+  </article>
+</template>
+<template data-template="pick"><p class="muted p-6" data-i18n="portal.audit.pick"></p></template>
+<template data-template="stamp-pass"><span class="stamp stamp-pass rule"><svg class="size-3" aria-hidden="true"><use href="#i-check"/></svg><span data-field="rule" translate="no"></span></span></template>
+<template data-template="stamp-shield"><span class="stamp stamp-shield rule"><svg class="size-3" aria-hidden="true"><use href="#i-shield"/></svg><span data-field="rule" translate="no"></span></span></template>
+<template data-template="stamp-warn"><span class="stamp stamp-warn rule"><svg class="size-3" aria-hidden="true"><use href="#i-warn"/></svg><span data-field="rule" translate="no"></span></span></template>
+<template data-template="stamp-admin"><span class="stamp stamp-admin rule"><svg class="size-3" aria-hidden="true"><use href="#i-gear"/></svg><span data-field="rule" translate="no"></span></span></template>
+<template data-template="stamp-alarm"><span class="stamp stamp-alarm rule"><span data-field="rule" translate="no"></span></span></template>

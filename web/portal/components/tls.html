@@ -1,0 +1,35 @@
+<template data-template="change">
+  <div role="alert" class="alert alert-error alert-soft flex flex-col gap-3 p-4" data-testid="tls-alert-{host}">
+    <div class="flex items-center justify-between gap-4 w-full flex-wrap">
+      <div class="flex items-center gap-2">
+        <svg class="size-5 text-error shrink-0" aria-hidden="true"><use href="#i-warn"/></svg>
+        <strong data-field="title" class="font-bold text-base"></strong>
+      </div>
+      <div class="flex items-center gap-2 ms-auto">
+        <button type="button" class="btn btn-sm btn-primary" data-action="untrust" data-testid="tls-untrust-{host}"><span data-i18n="portal.tls.doNotTrust"></span></button>
+        <button type="button" class="btn btn-sm btn-outline btn-error whitespace-nowrap gap-1 btn-disabled pointer-events-none" disabled data-action="accept" data-testid="tls-accept-{host}"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.tls.trust"></span></button>
+      </div>
+    </div>
+    <div class="text-xs opacity-80" data-field="text"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full text-xs" data-testid="tls-diff-grid">
+      <div class="rounded-lg bg-base-100/60 p-3 border border-base-content/10 space-y-1.5" data-testid="tls-col-before">
+        <p class="text-sm font-medium muted" data-i18n="portal.tls.colBefore"></p>
+        <dl class="space-y-1">
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.issuer"></dt>: <dd class="inline font-medium" data-field="before-issuer"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.root"></dt>: <dd class="inline font-mono text-[11px]" data-field="before-root"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.validTo"></dt>: <dd class="inline" data-field="before-valid"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.fingerprint"></dt>: <dd class="inline font-mono text-[11px]" data-field="before-fp"></dd></div>
+        </dl>
+      </div>
+      <div class="rounded-lg bg-base-100/60 p-3 border border-base-content/10 space-y-1.5" data-testid="tls-col-now">
+        <p class="text-sm font-medium muted" data-i18n="portal.tls.colNow"></p>
+        <dl class="space-y-1">
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.issuer"></dt>: <dd class="inline font-medium" data-field="now-issuer"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.root"></dt>: <dd class="inline font-mono text-[11px]" data-field="now-root"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.validTo"></dt>: <dd class="inline" data-field="now-valid"></dd></div>
+          <div><dt class="opacity-60 inline" data-i18n="portal.tls.fingerprint"></dt>: <dd class="inline font-mono text-[11px]" data-field="now-fp"></dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</template>

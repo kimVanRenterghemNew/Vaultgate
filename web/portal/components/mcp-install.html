@@ -1,0 +1,73 @@
+<!-- De MCP in de agents van deze pc zetten, of de JSON kopiëren. De agent krijgt `--name`, nooit de key. -->
+<div class="space-y-5" data-testid="mcp-install">
+  <p class="text-sm muted" data-i18n="portal.mcpInstall.help"></p>
+
+  <!-- 1. Waar: voor alle mappen of één map -->
+  <section class="space-y-2" data-testid="mcp-scope-selector">
+    <h4 class="text-xs font-semibold uppercase tracking-wider muted" data-i18n="portal.mcpInstall.whereTitle"></h4>
+    <div class="join w-full">
+      <input type="radio" name="mcp-scope" value="user" id="mi-scope-user" checked class="join-item btn btn-sm flex-1" data-i18n-aria-label="portal.mcpInstall.scopeUser" data-testid="mcp-scope-user-radio" />
+      <input type="radio" name="mcp-scope" value="project" id="mi-scope-project" class="join-item btn btn-sm flex-1" data-i18n-aria-label="portal.mcpInstall.scopeProject" data-testid="mcp-scope-project-radio" />
+    </div>
+    <div id="mi-folder-box" class="hidden" data-testid="mcp-folder-box">
+      <input type="text" id="mi-folder-input" class="input input-sm w-full font-mono text-xs" data-testid="mcp-folder-input" />
+    </div>
+  </section>
+
+  <!-- 2. De agents op deze pc: één rij per agent, met waar hij al staat -->
+  <section class="space-y-2">
+    <div class="flex items-center justify-between gap-2">
+      <h4 class="text-xs font-semibold uppercase tracking-wider muted" data-i18n="portal.mcpInstall.agentsTitle"></h4>
+      <button type="button" id="mi-refresh" class="btn btn-xs btn-ghost" data-testid="mcp-refresh" data-i18n="portal.mcpInstall.refresh"></button>
+    </div>
+    <ul id="mi-agents" class="space-y-2" data-testid="mcp-agents"></ul>
+    <p id="mi-none" class="text-sm muted hidden" data-testid="mcp-none" data-i18n="portal.mcpInstall.none"></p>
+    <p id="mi-refresh-status" class="text-xs muted" data-testid="mcp-refresh-status"></p>
+  </section>
+
+  <!-- 3. Skill en policy -->
+  <section class="flex items-center justify-between gap-3 rounded-lg border border-[var(--line)] p-3" data-testid="mcp-skill-section">
+    <div>
+      <p class="text-sm font-medium" data-i18n="portal.mcpInstall.skillTitle"></p>
+      <p class="text-xs muted" data-i18n="portal.mcpInstall.skillHelp"></p>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      <span id="mi-skill-status" class="text-xs muted" data-testid="mcp-skill-status"></span>
+      <button type="button" id="mi-skill-install" class="btn btn-sm btn-outline" data-testid="mcp-skill-install" data-i18n="portal.mcpInstall.installSkill"></button>
+      <button type="button" id="mi-skill-uninstall" class="btn btn-sm btn-ghost text-error" data-testid="mcp-skill-uninstall" data-i18n="portal.mcpInstall.uninstallSkill"></button>
+    </div>
+  </section>
+
+  <!-- 4. Een andere agent: de JSON zelf plakken -->
+  <section class="flex flex-wrap items-center justify-between gap-2">
+    <p class="text-sm muted" data-i18n="portal.mcpInstall.otherAgent"></p>
+    <div class="flex items-center gap-2">
+      <div class="join">
+        <button type="button" id="mi-copy" class="join-item btn btn-sm" data-testid="mcp-copy-json" data-i18n="portal.mcpInstall.copyJson"></button>
+        <button type="button" id="mi-copy-vscode" class="join-item btn btn-sm" data-testid="mcp-copy-json-vscode" data-i18n="portal.mcpInstall.copyJsonVscode"></button>
+      </div>
+      <a id="mi-status-link" href="/mcp" target="_blank" rel="noopener noreferrer" class="link text-xs muted" data-testid="mcp-status-link"><span data-i18n="portal.mcpInstall.statusPage"></span> <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+</div>
+
+<template data-template="agent">
+  <li class="rounded-lg border border-[var(--line)] bg-base-200 px-3 py-2" data-testid="mcp-agent-{id}">
+    <div class="flex items-center justify-between gap-3">
+      <span class="font-medium text-sm" data-field="label"></span>
+      <span class="flex items-center gap-2">
+        <span class="text-xs muted" data-role="status" data-testid="mcp-status-{id}"></span>
+        <button type="button" class="btn btn-sm btn-primary" data-action="install" data-testid="mcp-install-{id}" data-i18n="portal.mcpInstall.install"></button>
+        <button type="button" class="btn btn-sm btn-ghost text-error hidden" data-action="uninstall" data-testid="mcp-uninstall-{id}" data-i18n="portal.mcpInstall.uninstall"></button>
+      </span>
+    </div>
+    <ul class="mt-1 space-y-1" data-role="places"></ul>
+  </li>
+</template>
+
+<template data-template="installation-row">
+  <li class="flex items-center justify-between gap-2 text-xs" data-testid="mcp-installation-item">
+    <span class="truncate"><span class="muted" data-field="scopeLabel"></span> <span class="font-mono" data-field="displayPath"></span> <span class="text-error" data-field="missing"></span></span>
+    <button type="button" class="btn btn-xs btn-ghost text-error" data-if="project" data-action="remove-install" data-i18n="portal.mcpInstall.uninstall"></button>
+  </li>
+</template>

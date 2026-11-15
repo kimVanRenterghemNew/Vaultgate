@@ -1,0 +1,21 @@
+<div class="flex min-h-[70vh] flex-col items-center justify-center gap-5 py-6">
+  <div class="flex items-center gap-2 text-[22px] font-semibold"><svg class="size-7 text-[var(--signal)]" aria-hidden="true"><use href="#i-gate"/></svg><span translate="no">Vaultgate</span></div>
+  <div class="focus-card" data-layout="focus">
+    <div class="touch-orb mx-auto w-fit"><svg class="size-10" aria-hidden="true"><use href="#i-lock"/></svg></div>
+    <div class="text-center">
+      <h1 class="screen-title" data-i18n="portal.unlock.title"></h1>
+      <p class="mt-2 text-sm ink-2" data-i18n="portal.unlock.passkeyText"></p>
+    </div>
+    <div id="unlock-passkey" class="flex flex-col gap-2">
+      <button id="unlock-passkey-go" class="btn btn-primary btn-lg w-full gap-2" data-testid="unlock-passkey-go"><svg class="size-5" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.unlock.passkeyGo"></span></button>
+      <div class="border-t border-[var(--line)] pt-4"><button id="unlock-phone-go" class="btn btn-outline w-full gap-2" data-testid="unlock-phone-go"><svg class="size-4" aria-hidden="true"><use href="#i-phone"/></svg><span data-i18n="portal.unlock.phoneGo"></span></button></div>
+    </div>
+    <!-- Alleen een oudere kluis met een passphrase; een kluis met alleen passkeys heeft er geen. -->
+    <div id="unlock-passphrase" class="w-full space-y-2 border-t border-[var(--line)] pt-4 text-left">
+      <p class="text-sm muted" data-i18n="portal.unlock.passphraseText"></p>
+      <fieldset class="fieldset"><label class="label" for="unlock-pass" data-i18n="portal.common.passphrase"></label><input id="unlock-pass" type="password" class="input w-full" data-testid="unlock-pass"></fieldset>
+      <button id="unlock-go" class="btn btn-outline" data-testid="unlock-go" data-i18n="portal.common.unlock"></button>
+    </div>
+  </div>
+  <p class="max-w-[52ch] text-center text-sm muted" data-testid="unlock-start-over" data-i18n="portal.login.startOver"></p>
+</div>

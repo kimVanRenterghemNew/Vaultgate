@@ -1,0 +1,13 @@
+<div class="overflow-x-auto max-h-[300px] overflow-y-auto"><table class="table table-sm" data-testid="paired-tools">
+  <thead><tr><th data-i18n="portal.common.tool"></th><th data-i18n="portal.keys.kind"></th><th data-i18n="portal.device.since"></th></tr></thead>
+  <tbody id="paired-tools"></tbody>
+</table></div>
+<p id="paired-tools-empty" class="opacity-60 hidden" data-testid="paired-tools-empty" data-i18n="portal.device.pairedEmpty"></p>
+
+<template data-template="row">
+  <tr data-testid="paired-tool-{name}">
+    <td class="font-mono" data-field="name"></td>
+    <td data-field="kind"></td>
+    <td data-field="since"></td>
+  </tr>
+</template>

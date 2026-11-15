@@ -1,0 +1,29 @@
+<!-- De key één keer, en wat de tool nodig heeft. Eén element in de pagina: bij aanmaken in de stap, bij Rotate in de dialoog. -->
+<div class="space-y-3">
+  <div id="kr-key-part" class="space-y-3">
+  <div class="key-box" data-testid="t-key-box">
+    <div class="flex items-center justify-between gap-3">
+      <p class="font-medium"><span data-i18n="portal.keys.keyTitle"></span> <span class="muted font-normal" data-i18n="portal.keys.keyOnce"></span></p>
+      <button type="button" id="kr-copy-key" class="btn btn-sm btn-ghost" data-testid="key-copy" data-i18n="portal.keys.copy"></button>
+    </div>
+    <code id="kr-key" class="block font-mono mt-2 break-all text-sm" data-testid="t-key" translate="no"></code>
+  </div>
+  <p id="kr-copied-note" class="text-sm muted hidden" data-testid="key-copied-note" data-i18n="portal.keys.copiedNote"></p>
+  </div>
+  <div class="flex items-center justify-between gap-3">
+    <p class="font-medium" data-i18n="portal.keys.configTitle"></p>
+    <button type="button" id="kr-copy-config" class="btn btn-sm btn-ghost" data-testid="config-copy" data-i18n="portal.keys.copy"></button>
+  </div>
+  <div id="kr-config" data-testid="key-config"></div>
+  <div class="flex justify-end"><button type="button" id="kr-done" class="btn btn-primary" data-testid="key-done" data-i18n="portal.keys.gotIt"></button></div>
+</div>
+
+<template data-template="web">
+  <div class="config-box" translate="no">
+    <pre data-prefix="#"><code data-i18n="portal.keys.configAnthropic"></code></pre>
+    <pre data-prefix="$"><code>ANTHROPIC_BASE_URL=<span data-field="proxy"></span>/anthropic</code></pre>
+    <pre data-prefix="$"><code>ANTHROPIC_API_KEY=<span data-field="key"></span></code></pre>
+    <pre data-prefix="#"><code data-i18n="portal.keys.configForward"></code></pre>
+    <pre data-prefix="$"><code>curl <span data-field="proxy"></span>/forward/https://api.example.com/ -H "x-vault-gate-tool-key: <span data-field="key"></span>" -H "Authorization: Bearer {{secret:<span data-field="secret"></span>}}"</code></pre>
+  </div>
+</template>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dracula">
+<head>
+    <meta charset="utf-8">
+    <title>{{serverName}} MCP Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>{{css}}</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>
+                    <span>{{serverName}} MCP Server</span>
+                    <span class="status-badge">Running · v{{serverVersion}}</span>
+                </h1>
+                <p class="subtitle">Model Context Protocol endpoint for AI coding agents</p>
+            </div>
+            <div class="protocol-tag">Protocol {{protocolVersion}}</div>
+        </header>
+
+        <section class="card">
+            <h2>Server Endpoints</h2>
+            <div class="grid-2">
+                <div class="endpoint-box">
+                    <span class="endpoint-label">Streamable HTTP (Active)</span>
+                    <a href="{{cleanProxy}}/mcp" class="endpoint-url">{{cleanProxy}}/mcp</a>
+                </div>
+                <div class="endpoint-box">
+                    <span class="endpoint-label">Legacy SSE (Active)</span>
+                    <a href="{{cleanProxy}}/sse" class="endpoint-url">{{cleanProxy}}/sse</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Install in Agents</h2>
+            <div class="command-box"><code>vaultgate install</code></div>
+            <div class="command-box"><code>vaultgate install --skill</code></div>
+        </section>
+
+        <section class="card">
+            <h2>Available Tools ({{toolsCount}})</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tool</th>
+                            <th style="width: 45%;">Description</th>
+                            <th style="width: 30%;">Parameters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{toolRows}}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

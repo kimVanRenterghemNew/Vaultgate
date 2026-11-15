@@ -1,0 +1,63 @@
+/* Inspector (mockups v23): lijst links (master), één onderdeel groot rechts (detail); Ledger: rijen per groep. */
+/* In een laag: hulpklassen als `hidden` en `grid` winnen van de opbouw hieronder. */
+@layer components {
+.work-head { @apply flex flex-none items-end justify-between gap-6; }
+.work-head p { @apply mt-1 text-sm; color: var(--muted); }
+
+/* Tellers: een cijfer en zijn label, tabulair, geen tegel. */
+.figures { @apply flex shrink-0 items-baseline gap-6; }
+.figure { @apply flex items-baseline gap-2 text-sm; color: var(--muted); }
+.figure b { @apply text-[22px] font-medium; color: var(--ink); font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; }
+
+/* Panelen: haarlijn, één oppervlak. */
+.panel { @apply flex min-h-0 flex-col overflow-hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.panel-head { @apply flex flex-none items-center justify-between gap-3 px-4 text-sm; min-height: 44px; border-bottom: 1px solid var(--line); color: var(--muted); }
+.panel-head h2 { @apply text-sm font-medium; color: var(--ink); letter-spacing: 0; }
+.panel-body { @apply min-h-0 flex-1 overflow-y-auto; }
+.panel-foot { @apply flex flex-none items-center justify-between gap-3 px-4 py-3 text-sm; border-top: 1px solid var(--line); }
+.split { @apply grid min-h-0 flex-1 gap-4; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+@media (max-width: 760px) { .split { grid-template-columns: minmax(0, 1fr); } }
+
+/* Lijst links: elke rij een onderdeel; de gekozen rij heeft een signaalrand. */
+.rows > * + * { border-top: 1px solid var(--line); }
+.row { @apply grid w-full cursor-pointer items-center gap-x-3 px-4 py-3 text-left; grid-template-columns: auto minmax(0, 1fr) auto; transition: background-color var(--dur-micro) var(--ease-out); }
+.row:hover { background: color-mix(in oklch, var(--ground) 60%, var(--panel)); }
+.row[aria-selected="true"] { background: var(--ground); box-shadow: inset 3px 0 0 var(--signal); }
+/* Een rij in een lijst zonder detail (het welkom): niets om te kiezen. */
+div.row:not([role]) { cursor: default; }
+div.row:not([role]):hover { background: transparent; }
+.row-time { @apply text-sm; font-family: var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.row-title { @apply block truncate font-medium; }
+.row-sub { @apply block truncate text-sm; font-family: var(--font-mono); color: var(--muted); }
+.row-note { @apply block truncate text-sm; color: var(--muted); }
+.row-icon { @apply grid size-8 place-items-center rounded-md; background: var(--ground); color: var(--muted); }
+.row-icon svg { @apply size-4; }
+
+/* Tabel (Settings-ledger en lange lijsten). */
+.table-x { @apply w-full text-sm; border-collapse: collapse; }
+.table-x th { @apply px-4 py-2.5 text-left text-[13px] font-medium; color: var(--muted); border-bottom: 1px solid var(--line); }
+.table-x td { @apply px-4 py-3 align-middle; border-bottom: 1px solid var(--line); }
+.table-x tr:last-child td { border-bottom: 0; }
+
+/* Detail rechts: de beslissing (of de naam van het onderdeel) als lezing, daaronder één zin en de feiten. */
+.detail { @apply flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6; }
+.detail[hidden] { display: none; }
+.reading { @apply text-[24px] leading-tight; font-family: var(--font-mono); letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.reading-bad { color: var(--bad); }
+.reading-ok { color: var(--ok); }
+.reading-warn { color: var(--warn); }
+.reading-cool { color: var(--cool); }
+.reading-note { @apply mt-2 text-[15px]; color: var(--ink-2); max-width: 52ch; }
+.facts { @apply grid gap-x-6 gap-y-2.5 text-sm; grid-template-columns: max-content minmax(0, 1fr); }
+.facts dt { color: var(--muted); }
+.facts dd { @apply min-w-0; overflow-wrap: anywhere; }
+.facts dd.mono { font-size: 14px; }
+.detail-actions { @apply mt-auto flex items-center justify-between gap-3 pt-4; border-top: 1px solid var(--line); }
+.detail-actions p { @apply text-sm; color: var(--muted); }
+.section-label { @apply mb-2 text-sm font-medium; color: var(--ink); }
+
+/* Focus (welkom, inloggen): één kolom of één kaart midden in het venster; de actierij onderaan met een haarlijn. */
+.focus-col { @apply mx-auto flex w-full max-w-[640px] min-h-0 flex-1 flex-col; }
+.focus-foot { @apply mt-auto flex items-center justify-between gap-3 pt-4; border-top: 1px solid var(--line); }
+.focus-card { @apply mx-auto flex w-full max-w-[420px] flex-col gap-4 rounded-xl p-8; background: var(--panel); border: 1px solid var(--line-2); }
+}

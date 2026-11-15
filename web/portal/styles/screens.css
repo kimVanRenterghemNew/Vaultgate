@@ -1,0 +1,183 @@
+/* Wat bij één scherm hoort. De gedeelde onderdelen staan in base.css en inspector.css. */
+
+/* Menu in de kopbalk (mockups v23): links naast het logo, het actieve item met een signaallijn onderaan, een teller
+   "wacht op jou". Rechts, na een lijn, de sessie: de afteller als tekst (geen knop), Lock omlijnd, uitloggen als icoon. */
+.menu-bar { @apply ml-1 flex flex-wrap items-center justify-start gap-0.5; }
+.menu-pill { @apply inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm whitespace-nowrap cursor-pointer; color: var(--muted); transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out); }
+.menu-pill:hover { color: var(--ink); background: var(--ground); }
+.menu-pill[aria-current="page"] { color: var(--ink); background: var(--ground); box-shadow: inset 0 -2px 0 var(--signal); }
+.menu-pill-icon { @apply size-4; }
+.menu-pill-wait { @apply inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[11px] font-semibold; background: var(--signal); color: var(--color-primary-content); } .menu-pill-wait:empty { display: none; }
+.session-bar { @apply ml-auto flex shrink-0 items-center gap-1 pl-2; border-left: 1px solid var(--line); }
+.session-status { @apply flex items-center gap-1.5 pr-1 text-sm whitespace-nowrap; color: var(--muted); }
+
+/* Secrets: een rustige lijst (ledger) en Sensitive dat opvalt. */
+.ledger { @apply rounded-box border bg-base-100; border-color: var(--line); }
+.ledger-row { @apply flex flex-wrap items-center gap-4 px-5 py-3; }
+.ledger-row + .ledger-row { border-top: 1px solid var(--line); }
+.ledger-icon { @apply size-10 shrink-0 flex items-center justify-center; } /* het icoon zelf, zonder gekleurd vlak */
+.row-actions { @apply ml-auto flex shrink-0 items-center gap-1.5; }
+.fact { @apply inline-flex items-center gap-1 text-sm; color: var(--muted); }
+.sensitive-box { @apply flex items-start gap-3 mt-3 rounded-lg p-3 cursor-pointer; border: 1px solid color-mix(in oklch, var(--signal) 45%, transparent); background: var(--signal-soft); }
+.sensitive-box:has(input:not(:checked)) { border-color: var(--line-2); background: transparent; } .sensitive-box:has(input:not(:checked)) .badge { display: none; }
+
+/* Unlock en aanraken: de sleutel die ademt. */
+.touch-orb { @apply relative rounded-full p-6; background: var(--signal-soft); color: var(--signal); }
+.touch-orb::after { content: ""; position: absolute; inset: -8px; border-radius: 9999px; border: 1px solid color-mix(in oklch, var(--signal) 45%, transparent); animation: orb-ring 2.4s var(--ease-out) infinite; }
+@keyframes orb-ring { 0% { transform: scale(94%); opacity: 0.9; } 100% { transform: scale(112%); opacity: 0; } }
+.touch-orb[data-tone="success"] { background: color-mix(in oklch, var(--ok) 14%, var(--panel)); color: var(--ok); }
+.touch-orb[data-tone="error"] { background: var(--bad-soft); color: var(--bad); }
+.touch-orb[data-tone="warning"] { background: var(--warn-soft); color: var(--warn); }
+.touch-orb[data-tone]::after { display: none; }
+
+/* Touch-knop animatie tijdens aanraking / wachten op FIDO */
+@keyframes touch-beat {
+  0% { transform: scale(100%); filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); }
+  25% { transform: scale(130%); filter: drop-shadow(0 0 5px var(--signal)); }
+  50% { transform: scale(95%); filter: drop-shadow(0 0 1px var(--signal)); }
+  75% { transform: scale(118%); filter: drop-shadow(0 0 4px var(--signal)); }
+  100% { transform: scale(100%); filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); }
+}
+
+@keyframes touch-ring-fast {
+  0% { transform: scale(90%); opacity: 1; }
+  100% { transform: scale(135%); opacity: 0; }
+}
+
+.btn.touch-busy,
+.btn.touch-busy:disabled,
+.btn.touch-busy[disabled] {
+  pointer-events: none !important;
+  cursor: wait !important;
+  opacity: 0.95 !important;
+  color: var(--ink) !important;
+  background-color: color-mix(in oklch, var(--signal) 15%, var(--panel)) !important;
+  border-color: var(--signal) !important;
+}
+
+.btn.touch-busy svg,
+.btn.touch-busy[disabled] svg,
+.touch-busy svg,
+.touch-animating,
+svg.touch-animating {
+  animation: touch-beat 0.8s ease-in-out infinite !important;
+  color: var(--signal) !important;
+  transform-origin: center center;
+  display: inline-block;
+}
+
+.touch-orb.touch-busy::after {
+  animation: touch-ring-fast 0.8s var(--ease-out) infinite !important;
+  border-color: var(--signal) !important;
+}
+
+.touch-orb.touch-busy svg {
+  animation: touch-beat 0.8s ease-in-out infinite !important;
+}
+
+/* Welkom zonder kader: zolang het welkom open is, vult de tegel het venster (het venster zelf is op maat, src/window). */
+body:has(#view-welcome:not(.hidden)) { display: flex; flex-direction: column; height: 100vh; }
+main:has(> #view-welcome:not(.hidden)) { display: flex; flex-direction: column; flex: 1; min-height: 0; max-width: none; width: 100%; padding: 0; } main:has(> #view-welcome:not(.hidden)) > #view-welcome { flex: 1; min-height: 0; }
+#message:empty { display: none; }
+
+
+/* Welkom: de voortgang als dunne lijn; de pagina schuift in de richting van de stap. */
+.lock-rail { position: relative; height: 4px; border-radius: 9999px; overflow: hidden; background: var(--line); }
+.lock-rail > i { position: absolute; inset: 0 auto 0 0; width: var(--fill, 0%); border-radius: inherit; background: var(--signal); transition: width 500ms var(--ease-out); }
+[data-testid="welcome-steps"] > [data-reached="true"] { font-weight: 600; } [data-testid="welcome-steps"] > [data-reached="false"] { opacity: .6; }
+#wl-pages { view-transition-name: welcome-page; }
+::view-transition-old(welcome-page), ::view-transition-new(welcome-page) { animation-duration: 380ms; animation-timing-function: var(--ease-out); }
+::view-transition-old(welcome-page) { animation-name: welcome-out; }
+::view-transition-new(welcome-page) { animation-name: welcome-in; }
+.welcome-back::view-transition-old(welcome-page) { animation-name: welcome-out-back; }
+.welcome-back::view-transition-new(welcome-page) { animation-name: welcome-in-back; }
+@keyframes welcome-out { to { opacity: 0; transform: translateX(-48px); } }
+@keyframes welcome-in { from { opacity: 0; transform: translateX(48px); } }
+@keyframes welcome-out-back { to { opacity: 0; transform: translateX(48px); } }
+@keyframes welcome-in-back { from { opacity: 0; transform: translateX(-48px); } }
+
+/* Een key maken in genummerde stappen, en keuzekaarten (soort secret, soort passkey, web of MCP). */
+.step-block { @apply flex gap-4; }
+.step-num { @apply flex-none size-7 rounded-full grid place-items-center font-semibold text-sm; background: var(--signal); color: var(--color-primary-content); }
+.step-title { @apply text-base font-medium leading-7; } .step-help { @apply text-sm; color: var(--muted); }
+.choice-card { @apply flex cursor-pointer items-start gap-3 rounded-lg bg-base-100 p-3 text-left; border: 1px solid var(--line-2); transition: border-color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out); }
+.choice-card:hover { background: var(--ground); }
+.choice-card[aria-checked="true"], .choice-card[aria-selected="true"], .choice-card[aria-pressed="true"] { border-color: var(--signal); background: var(--signal-soft); box-shadow: inset 0 0 0 1px var(--signal); }
+
+/* Certificates toont een gewijzigde keten zelf (lijst + detail): de banner bovenaan zou ze daar dubbel tonen. */
+ks-main:has(> #tab-tls:not(.hidden)) > #tls-box { display: none; }
+
+/* De key, één keer, en de configuratie voor de tool: volledig in hun vak. Lange regels breken af in plaats van rechts
+   te verdwijnen (het welkom is één smalle kolom); geen getekend terminalvenster, wel het teken voor elke regel. */
+.key-box { @apply rounded-lg px-4 py-3; border: 1px solid color-mix(in oklch, var(--signal) 45%, transparent); background: var(--signal-soft); }
+.config-box { @apply rounded-lg p-3 text-sm; font-family: var(--font-mono); background: var(--deep); border: 1px solid var(--line); }
+.config-box pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: inherit; }
+.config-box pre[data-prefix]::before { content: attr(data-prefix) " "; color: var(--muted); }
+.config-box pre[data-prefix="#"] { color: var(--muted); }
+
+/* Getting started: een stap is een vinkje (gedaan) of haar nummer (nog te doen). */
+.wizard-step { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+.wizard-step[data-done="true"] { color: var(--ink); }
+.wizard-mark { display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 9999px; border: 1px solid var(--line-2); font-size: 0.7rem; }
+.wizard-mark svg { display: none; width: 0.75rem; height: 0.75rem; }
+.wizard-mark b { font-weight: 500; }
+.wizard-step[data-done="true"] .wizard-mark { border-color: transparent; background: var(--signal-soft); color: var(--signal); }
+.wizard-step[data-done="true"] .wizard-mark svg { display: block; }
+.wizard-step[data-done="true"] .wizard-mark b { display: none; }
+
+/* Vloeiender portaal: overgangen voor tabs, dialogen en rijen (150-250ms, alleen transform en opacity) */
+.tab-panel:not(.hidden) {
+  animation: tab-enter var(--dur-short) var(--ease-out);
+}
+@keyframes tab-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal[open] > .modal-box {
+  animation: modal-enter var(--dur-short) var(--ease-out);
+}
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(98%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(100%) translateY(0);
+  }
+}
+
+.row-enter {
+  animation: row-slide-in var(--dur-short) var(--ease-out);
+}
+@keyframes row-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#view-unlock:not(.hidden) .focus-card, #view-login:not(.hidden) .focus-card {
+  animation: card-enter var(--dur-short) var(--ease-out);
+}
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

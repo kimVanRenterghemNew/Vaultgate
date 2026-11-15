@@ -1,0 +1,32 @@
+// Alle webcomponents van het portaal. Importeren = registreren (customElements.define); de volgorde maakt niet uit,
+// een element wordt opgewaardeerd zodra zijn definitie er is.
+import './icons.js';
+import './ask.js';
+import './pause.js';
+import './menu.js';
+import './header.js';
+import './welcome.js';
+import './recovery.js';
+import './login.js';
+import './unlock.js';
+import './rollback.js';
+import './integrity.js';
+import './main.js';
+import './wizard.js';
+import './tls.js';
+import './tls-tab.js';
+import './audit.js';
+import './key-config.js';
+import './mcp-install.js';
+export { refreshMcp } from './mcp-install.js';
+import './key-create.js';
+import './tools.js';
+import './secrets.js';
+import './grants.js';
+import './device-list.js';
+import './paired-tools.js';
+import './passkey-list.js';
+import './passkey-add.js';
+import './passkeys.js';
+import './settings.js';
+import './security-specs.js';

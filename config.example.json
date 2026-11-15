@@ -1,0 +1,9 @@
+{
+  "home": null,
+  "proxyPort": 8484,
+  "portalPort": 8485,
+  "portalHost": "127.0.0.1",
+  "tray": "auto",
+  "window": "app",
+  "deviceIntervalSeconds": 5
+}

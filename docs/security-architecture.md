@@ -3,7 +3,7 @@
 > **Status:** Production Design Reference  
 > **Classification:** Public Technical Documentation & Code Reviewer Guide  
 > **License:** GPL-3.0  
-> **Source Repository:** [kimVanRenterghemNew/Vaultgate](https://github.com/kimVanRenterghemNew/Vaultgate)
+> **Source Repository:** [vaultgate/vaultgate](https://github.com/vaultgate/vaultgate)
 
 ---
 
@@ -69,10 +69,10 @@ The Vaultgate test bench runs an automated attack suite (`npm run attack`) simul
 
 | ID | Attack Vector | Adversary Objective | Vaultgate Countermeasure | Status | Enforcement Layer |
 |---|---|---|---|---|---|
-| **A1** | Direct read of tool key storage (`clients/<tool>.key`) | Impersonate paired tool | Tool keys are stored solely as keyed HMACs; compromised keys only yield limited, revocable grants; placeholder locations remain enforced. | **BLOCKED** | Storage / Registry |
+| **A1** | Direct read of tool key storage (`clients/<tool>.key`) | Impersonate paired tool | The vault stores tool keys only as keyed hashes. The key file on the tool's side is protected with DPAPI on Windows, which stops other accounts but not a process running as the same user; a stolen key still only yields that tool's limited, revocable grants. macOS and Linux follow. | *OPEN (limited)* | Storage / Registry |
 | **A2** | Rogue tool pairing via RFC 8628 Device Flow | Connect unauthorized agent | Existing tool names rejected (`name_taken`); pairing requires visual code verification and physical FIDO2 touch. | **BLOCKED** | Device Flow / Auth |
-| **A3** | UI Automation / Synthetic Clicks (SendKeys, .NET) | Silently click "Allow" on tray dialog | Approval buttons disabled for initial 1.5s; persistent grants and sensitive secrets mandate FIDO2 User Verification (physical touch). | **BLOCKED** | UI / WebAuthn |
-| **A4** | Tampering with daemon or tray source scripts | Bypass approval / modify decision logic | Startup file hash verification sealed by vault key (Backlog Story 9.2); Ed25519 signature bootstrap verification; protected OS directory; Sigstore CI provenance (`npm publish --provenance`, Story 7.1). | **MITIGATED** | OS Packaging / Core |
+| **A3** | UI Automation / Synthetic Clicks (SendKeys, .NET) | Silently click “Allow” on tray dialog | Approval buttons disabled for initial 1.5s; persistent grants and sensitive secrets mandate FIDO2 User Verification (physical touch). | **BLOCKED** | UI / WebAuthn |
+| **A4** | Tampering with daemon or tray source scripts | Bypass approval / modify decision logic | Hashes of the installed files sealed in the vault and checked when it opens. Planned with the first release: Ed25519-signed release, a protected install directory, npm provenance. | **PARTIAL** (open in the attack bench until the release) | OS Packaging / Core |
 | **A5** | Reading process memory (`ReadProcessMemory`) | Extract vault key while unlocked | Ephemeral in-memory lifetimes; auto-lock on idle; zeroing of sensitive buffers. Note: V8 string engine memory limitations acknowledged. | *OPEN (Mitigated)* | Memory Hygiene |
 | **A6** | Offline brute-forcing of vault files | Crack vault ciphertext | 32-byte random vault key (never derived from password); Argon2id (256 MiB RAM) for passphrase; WebAuthn PRF hardware derivation. | **BLOCKED** | Libsodium KDF |
 | **A7** | Stealing portal session cookies | Alter policies, add rogue hosts | `HttpOnly`, `SameSite=Strict`, CSRF tokens, strict Host header checking (`421 Misdirected`), dedicated isolated browser profile. | **BLOCKED** | Portal Engine |
@@ -84,7 +84,7 @@ The Vaultgate test bench runs an automated attack suite (`npm run attack`) simul
 | **A13** | Man-in-the-Middle / Corporate CA spoofing | Intercept plaintext credential | Strict TLS checking; Trust-On-First-Use (TOFU) pinning. If certificate issuer or root changes, request halts at handshake (`tls-chain-changed`). | **BLOCKED** | TLS Layer |
 | **A14** | DNS rebinding / Browser-based CSRF | Issue unauthorized local commands | Strict Host header validation (`127.0.0.1` / `localhost` only, returns `421`); strict JSON Content-Type validation (`415 Unsupported Media`). | **BLOCKED** | HTTP Dispatcher |
 | **A15** | DoS & brute-force token guessing | Flood daemon / guess tool keys | Tarpitting: after 5 failed keys in 3 minutes, client is rate-limited with exponential backoff and connection delays. | **BLOCKED** | Throttle Engine |
-| **A16** | Keep-alive spam to prevent auto-lock | Prolong memory exposure window | Invalid tool keys or unauthorized requests do not reset the auto-lock inactivity timer. | *OPEN (Roadmap 9.8)* | Session Manager |
+| **A16** | Keep-alive spam to prevent auto-lock | Prolong memory exposure window | Invalid tool keys or unauthorized requests do not reset the auto-lock inactivity timer. | **BLOCKED** | Session Manager |
 | **A17** | Rogue browser extension injection | Intercept secret entry in portal | Dedicated Edge/Chromium app-mode instance launched with isolated profile and `--disable-extensions`. | **BLOCKED** | Launcher |
 | **A18** | OS clipboard / Keystroke logger | Steal secret on entry | Passkey-based unlock (no password typed); secret values inputted once and never redisplayed in any UI or API response. | **BLOCKED** | Portal View |
 | **A19** | Hijacking CLI helper script (`apiKeyHelper`) | Intercept tool credentials | Tool keys are scoped strictly to assigned grants; compromised keys cannot access ungranted secrets; single-click revocation. | **BLOCKED** | CLI Registry |
@@ -254,7 +254,7 @@ Every incoming HTTP request forwarded through Vaultgate passes sequentially down
 - The rule name that determined the outcome is returned in the response header:
   `x-vault-gate-rule: <rule-name>`
 - Forwarding requests must supply the tool credential via:
-  `x-vault-gate-tool-key: vg_...`
+  `x-vault-gate-tool-key: ks_...`
 - Status code mapping strictly follows security semantics:
   - `401 Unauthorized`: Identity missing, invalid, or timed out (`no-tool-key`, `tool-key-revoked`, `approval-timeout`).
   - `403 Forbidden`: Authenticated tool attempting unauthorized action (`target-host-not-allowed`, `client-not-allowed`, `placeholder-location-not-allowed`, `approval-denied`).
@@ -281,8 +281,8 @@ Vaultgate inspects the TLS certificate chain during the TLS handshake before wri
 
 ### 7.2 Multi-Alignment Response Scrubbing
 When an upstream server returns an HTTP response, Vaultgate buffers and scrubs data on-the-fly to prevent echoed credentials from reaching the agent:
-- Detects plaintext secrets, hexadecimal representations, and all three possible base64 byte alignments.
-- **Cross-Chunk Boundary Windowing:** Maintains a sliding buffer spanning chunk boundaries equal to twice the secret length, ensuring secrets split across TCP packets or HTTP chunks are redacted cleanly.
+- Detects plaintext secrets, base64 in all three byte alignments, base64url, hexadecimal, URL-encoded and JSON-escaped forms.
+- **Cross-Chunk Boundary Windowing:** After each chunk, only the tail that could be the start of a match is held back (at most the pattern length minus one); everything else streams on at once. The result equals scrubbing the whole response in one go, so a secret split across two chunks is still removed.
 
 ---
 
@@ -322,7 +322,7 @@ Agent CLI                                  Vaultgate Daemon                     
    │ 4. POST /device/token (polls with code)      │ 4. Validated with physical touch      │
    ├─────────────────────────────────────────────►│◄──────────────────────────────────────┤
    │                                              │                                       │
-   │ 200 { tool_key: "vg_..." } (Delivered ONCE)  │                                       │
+   │ 200 { tool_key: "ks_..." } (Delivered ONCE)  │                                       │
    │◄─────────────────────────────────────────────┤                                       │
 ```
 
@@ -336,12 +336,13 @@ Agent CLI                                  Vaultgate Daemon                     
 
 Defending against autonomous agents requires ensuring the agent cannot modify Vaultgate's own executable files or tray scripts on disk (e.g., patching `policy` checks or altering `windows-tray.ps1` to auto-approve requests).
 
-### 10.1 Startup Code & Tray Hash Verification (Backlog Story 9.2)
+### 10.1 Code & Tray Hash Verification
 - **Vault-Sealed Hashes:** The expected cryptographic hashes of all runtime JavaScript modules and the PowerShell tray script (`windows-tray.ps1`) are sealed in the vault using a key derived during vault initialization.
-- **Fail-Closed Startup:** At boot, Vaultgate recalculates hashes for all core files before initializing IPC or opening the proxy port. If any script has been modified, the daemon halts immediately, refuses to unlock, and flags the status as `INTEGRITY_COMPROMISED`.
-- **Dual Visual Alerting:** An integrity violation triggers a system tray warning and a persistent, high-visibility red banner across the web portal (identical to the `tls-chain-changed` alarm pattern).
+- **Checked when the vault opens:** At start, Vaultgate hashes its installed files; when the vault opens, it compares them with the list sealed in the vault. A difference keeps the vault closed until you confirm the change in the portal (`code-changed`). A removed, replaced or foreign list fails with `VAULT_TAMPERED`, so patched code is never recorded silently.
 
-### 10.2 Asymmetric Ed25519 Code Signatures (Zero-Budget Integrity)
+### 10.2 Asymmetric Ed25519 Code Signatures (planned, not built yet)
+
+> Today Vaultgate records hashes of its installed files in the vault and refuses to open when they change, until you confirm. Signed releases, as described below, come with the first release.
 To protect distributed JavaScript bundles without requiring commercial Authenticode certificates (€400+/year):
 1. **Single-File Bundling:** Production builds bundle all source files into a single minified bundle: `dist/vaultgate.cjs`.
 2. **Release Signing:** CI signs the bundle using an Ed25519 private key, producing `dist/vaultgate.sig`.
@@ -356,14 +357,14 @@ To protect distributed JavaScript bundles without requiring commercial Authentic
    ```
 4. **Mathematical Guarantee:** An agent modifying `vaultgate.cjs` cannot forge an Ed25519 signature without the private key stored securely in GitHub Actions secrets.
 
-### 10.3 OS-Level Filesystem Protection (Backlog Stories 0.8 & 7.1)
+### 10.3 OS-Level Filesystem Protection (planned with the first release)
 - Standard operating system user environments permit local processes to write to user-space directories (`%APPDATA%`, `~/.config`).
 - Vaultgate's deployment model separates executable code from mutable data. Packaging installs binaries into a protected directory (e.g., `%ProgramFiles%` / system root) that requires UAC administrator elevation to write.
-- As a result, an AI agent running under standard user privileges cannot overwrite the daemon executable or inject rogue approval logic into the tray.
+- Once installed that way, an AI agent running under standard user privileges cannot overwrite the daemon executable or inject rogue approval logic into the tray.
 
-### 10.4 Release Provenance & Clean Surface Packaging (Backlog Stories 7.1 & 7.3)
+### 10.4 Release Provenance & Clean Surface Packaging
 - **Cryptographic Provenance:** Official packages published to npm (`npx vaultgate`) utilize GitHub Actions with Sigstore OIDC attestation (`npm publish --provenance`), creating an unforgeable public record linking the artifact directly to the verified commit in the public repository.
-- **Strict Clean-Export Automation:** Deployments are generated via automated release scripts (`release-export.mjs`) that squash public changes and strictly omit test mocks, developer spikes, internal backlog documents, and secrets.
+- **Strict Clean-Export Automation:** Deployments are generated via automated release scripts (`release-export.mjs`) that squash public changes and strictly omit test mocks, internal developer notes, draft documentation, and secrets.
 
 ---
 
@@ -390,5 +391,5 @@ When reviewing pull requests or auditing the Vaultgate codebase, reviewers must 
 | **Zero Credential Exposure** | Placeholders used throughout agent lifecycles; values never rendered in APIs or UI. |
 | **Strict Boundary Enforcement** | Fine-grained host allowlists and request header placement restrictions per secret. |
 | **Physical Proof of Intent** | WebAuthn hardware user verification for persistent permissions and sensitive secrets. |
-| **Application Integrity** | Ed25519 code signing, startup hash verification, OS directory isolation, Sigstore CI provenance. |
+| **Application Integrity** | Startup hash verification (Ed25519 release signing planned), OS directory isolation, Sigstore CI provenance. |
 | **Verifiable Proof Bench** | Automated suite (`npm run attack`) testing 22 explicit exploit patterns against the live engine. |

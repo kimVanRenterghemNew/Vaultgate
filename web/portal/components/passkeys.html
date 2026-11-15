@@ -1,0 +1,32 @@
+<div class="work-head flex-wrap">
+  <div class="min-w-0">
+    <h1 class="screen-title" data-i18n="portal.tabs.passkeys"></h1>
+    <p class="max-w-[68ch]" data-i18n="portal.passkeys.intro"></p>
+  </div>
+  <div class="flex items-center gap-6">
+    <div class="figures">
+      <span class="figure"><b id="pk-opens" data-testid="pk-opens">0</b><span data-i18n="portal.passkeys.figOpens"></span></span>
+      <span class="figure"><b id="pk-signs" data-testid="pk-signs">0</b><span data-i18n="portal.passkeys.figSigns"></span></span>
+    </div>
+    <button id="pk-open" class="btn btn-primary btn-sm gap-1.5" data-testid="pk-open"><svg class="size-4" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.passkeys.addTitle"></span></button>
+  </div>
+</div>
+<div id="pk-summary" class="note hidden" data-testid="pk-summary"><svg aria-hidden="true"><use href="#i-key"/></svg><span id="pk-summary-text"></span></div>
+<div class="split h-[calc(100vh-17rem)] min-h-[420px]">
+  <section class="panel" aria-labelledby="pk-head">
+    <div class="panel-head"><h2 id="pk-head" data-i18n="portal.passkeys.yours"></h2><span id="pk-count"></span></div>
+    <div id="passkeys-slot" class="panel-body"></div>
+    <p class="panel-foot muted" data-i18n="portal.passkeys.nothingToKeep"></p>
+  </section>
+  <section id="pk-detail" class="panel" data-testid="passkey-detail" data-i18n-aria-label="portal.tabs.passkeys"></section>
+</div>
+
+<dialog id="pk-dialog" class="modal" data-testid="pk-dialog" aria-labelledby="pk-dialog-title">
+  <div class="modal-box max-w-lg">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="pk-dialog-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.passkeys.addTitle"></span></h3>
+    <div id="pk-add-slot" class="mt-3"></div>
+    <div class="modal-action"><form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form></div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>

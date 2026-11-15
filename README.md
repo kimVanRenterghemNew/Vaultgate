@@ -1,20 +1,20 @@
 # Vaultgate: the secrets gate for AI agents
 
-[![CI](https://github.com/kimVanRenterghemNew/Vaultgate/actions/workflows/ci.yml/badge.svg)](https://github.com/kimVanRenterghemNew/Vaultgate/actions/workflows/ci.yml)
-[![Pages](https://github.com/kimVanRenterghemNew/Vaultgate/actions/workflows/pages.yml/badge.svg)](https://kimvanrenterghemnew.github.io/Vaultgate/)
-[![License](https://img.shields.io/github/license/kimVanRenterghemNew/Vaultgate)](LICENSE)
+[![CI](https://github.com/vaultgate/vaultgate/actions/workflows/ci.yml/badge.svg)](https://github.com/vaultgate/vaultgate/actions/workflows/ci.yml)
+[![Pages](https://github.com/vaultgate/vaultgate/actions/workflows/pages.yml/badge.svg)](https://vaultgate.github.io/Vaultgate/)
+[![License](https://img.shields.io/github/license/vaultgate/vaultgate)](LICENSE)
 
 **Your AI agents use your keys. They never see them.**
 
 Vaultgate is a local gate between your AI agents and the internet. An agent sends a placeholder. Vaultgate fills in the real key as the request leaves your computer, and only for the tool, the host and the place in the request that you allowed.
 
-Website: **[kimvanrenterghemnew.github.io/Vaultgate](https://kimvanrenterghemnew.github.io/Vaultgate/)** · [Tour of every screen](https://kimvanrenterghemnew.github.io/Vaultgate/tour.html) · [Security architecture](https://kimvanrenterghemnew.github.io/Vaultgate/security.html)
+- Website: **[vaultgate.github.io/Vaultgate](https://vaultgate.github.io/Vaultgate/)**
+- [A tour of every screen](https://vaultgate.github.io/Vaultgate/tour.html)
+- [How Vaultgate is secured](https://vaultgate.github.io/Vaultgate/security.html)
 
-| Light (Harborlight) | Dark (Dracula) |
-|---|---|
-| ![Activity: every decision with the name of its rule](site/img/screens/light/04-dashboard--default.webp) | ![Activity: every decision with the name of its rule](site/img/screens/dark/04-dashboard--default.webp) |
+![Activity: a request to another domain stopped by target-host-not-allowed, nothing decrypted](site/img/app/activity.png)
 
-> **Preview.** The code arrives in this repository with the first release. The npm package is not published yet. The screenshots are the approved designs the portal is being built to; the shipped portal may still differ.
+> **Preview.** The code arrives in this repository with the first release. The npm package is not published yet. The screenshots are the real portal, with test data.
 
 ## Why
 
@@ -53,9 +53,9 @@ Any refusal happens before the secret is decrypted, and carries the name of the 
 
 ```
 curl http://127.0.0.1:8484/forward/https://api.github.com/user \
-  -H "x-vault-gate-tool-key: vg_…" -H "Authorization: Bearer {{secret:github_token}}"
+  -H "x-vault-gate-tool-key: ks_…" -H "Authorization: Bearer {{secret:github_token}}"
 
-200 · x-vault-gate-rule: granted      (the real token went to api.github.com, and nowhere else)
+200  x-vault-gate-rule: granted      (the real token went to api.github.com, and nowhere else)
 ```
 
 Many tools need no placeholder at all: point them at Vaultgate (reverse routes, for example `ANTHROPIC_BASE_URL`) and Vaultgate puts the key where that service expects it.
@@ -74,6 +74,7 @@ Every request runs down the same table. The first matching rule decides; its nam
 | `client-not-allowed` | from an address you did not allow |
 | `no-placeholder` | nothing in the request asks for a secret |
 | `unknown-secret` | no such secret |
+| `bad-target` | a target that does not parse cleanly, such as an encoded path |
 | `target-host-not-allowed` | not a host this secret may go to |
 | `placeholder-location-not-allowed` | not a place in the request it may go |
 | `quiet-hours`, `grant-blocked`, `secret-blocked`, `tool-blocked` | blocks you set |
@@ -90,22 +91,22 @@ flowchart TD
     P1[Security key] -->|PRF| K1[key 1]
     P2[Phone] -->|PRF| K2[key 2]
     P3[Windows Hello] -->|PRF| K3[key 3]
-    K1 & K2 & K3 -->|each unwraps its own copy| VK[Vault key<br/>32 random bytes, only in memory while unlocked]
+    K1 & K2 & K3 -->|each unwraps its own copy| VK[Vault key<br/>32 random bytes, only in memory while the vault is open]
     VK -->|wraps| R1[record key: a secret]
     VK -->|wraps| R2[record key: a grant]
     VK -->|wraps| R3[record key: a log line]
-    R1 & R2 & R3 -->|XChaCha20-Poly1305, field by field| F[name · value · host · field names]
+    R1 & R2 & R3 -->|XChaCha20-Poly1305, field by field| F[name, value, host, field names]
 ```
 
 - The **vault key** is random and never derived from a password. Each passkey (through the WebAuthn PRF extension) holds its own wrapped copy; remove a passkey and only its copy goes.
 - Each record has its own key, and each field is encrypted on its own, bound to its record and position, so it cannot be moved elsewhere.
-- A MAC over the header and a record manifest makes a rolled-back or removed record, or a swapped-in key, fail to unlock.
+- A MAC over the header and a record manifest keeps the vault closed when a record is rolled back or removed, or a key swapped in.
 
 ### Nothing readable on disk
 
 | Open (and no secret) | Encrypted, field by field |
 |---|---|
-| format version · key-derivation settings and salts · the wrapped vault keys · random record ids | secret names, values and hosts · tools and their settings · grants and approvals · settings · **the audit log, line by line** |
+| format version, key-derivation settings and salts, the wrapped vault keys, random record ids | secret names, values and hosts; tools and their settings; grants and approvals; settings; **the audit log, line by line** |
 
 Tool keys are stored only as a keyed hash. You see a key once, or never (when the tool pairs itself).
 
@@ -132,8 +133,8 @@ The secret behind the request is 256 bits and expires after 10 minutes. At most 
 
 ### Audit first, TLS checked, guessing slowed down
 
-- **The log comes first.** A decision is written to the audit log before the secret is decrypted. If the log can't be written, nothing goes out (`audit-unavailable`). After three failures in a row the vault locks itself.
-- **TLS.** Vaultgate trusts what your PC trusts, strictly, and remembers who issued each site's certificate. If that changes, the check during the handshake stops the request before a byte leaves (`tls-chain-changed`), and the portal asks you.
+- **The log comes first.** A decision is written to the audit log before the secret is decrypted. If the log cannot be written, nothing goes out (`audit-unavailable`). After three failures in a row the vault locks itself.
+- **TLS.** Vaultgate trusts what Node and Mozilla trust, strictly, and remembers the chain it first saw for each site. A renewed certificate under the same root is fine; a new root you do not trust stops the request during the handshake, before a byte leaves (`tls-chain-changed`, `tls-untrusted`), and the portal asks you.
 - **Key guessing is throttled.** After 5 wrong tool keys in 3 minutes, the proxy stops answering for a while and tells you.
 - **The portal** listens on localhost only and opens in its own browser window without extensions. Passkey login, CSRF protection, a Host check against DNS rebinding, a nonce-based CSP. A secret's value goes in once and no page or API ever returns it.
 
@@ -146,28 +147,28 @@ The secret behind the request is 256 bits and expires after 10 minutes. At most 
 | The API echoes the key back | The reply is scrubbed, also across chunk boundaries and as base64 or hex. |
 | Stolen disk or backup | Everything is encrypted; without a way to unlock it, it is useless. |
 | A stolen tool key | Only works through Vaultgate, from allowed addresses, for what was granted. Revoke it in one click. |
-| A program clicks "Allow" | Anything that lasts asks for a touch of your passkey. |
-| Someone in the middle | Strict TLS: a changed certificate issuer stops the request. The first chain Vaultgate sees for a site is the one it trusts. |
+| A program clicks “Allow” | Anything that lasts asks for a touch of your passkey. |
+| Someone in the middle | Strict TLS: a new root you do not trust stops the request. A renewed certificate under a known root is fine. |
 | **Not covered** | Malware running as you while the vault is open can read memory. Vaultgate keeps that window small (auto-lock, wiping buffers), and says so. |
 
-> Detailed technical specifications: see [Security Architecture & Threat Model](docs/security-architecture.md).
+> Every technique, and what is not covered: [How Vaultgate is secured](https://vaultgate.github.io/Vaultgate/security.html). Details: [Security Architecture & Threat Model](docs/security-architecture.md) and the [security overview](docs/SECURITY.md).
 
 ## A look at the portal
 
 | | |
 |---|---|
-| ![Welcome: how do you want to unlock your vault?](site/img/screens/light/00-welcome-flow--2-unlock.webp) | ![Connect your first tool in three numbered steps](site/img/screens/dark/00-welcome-flow--3-auto.webp) |
+| ![Welcome: passkeys that open the vault](site/img/app/welcome-passkeys.png) | ![Welcome: the first tool and its key, shown once](site/img/app/welcome-first-tool.png) |
 | **Welcome**: passkeys first, we recommend two. | **Connect a tool** in three numbered steps. |
-| ![Approve in the tray](site/img/screens/light/05-goedkeuring--default.webp) | ![Touch your passkey](site/img/screens/dark/06-aanraking--default.webp) |
-| **Approve in the tray**: tool, secret and host on one line. | **A touch, not a click.** |
-| ![Secrets: add a secret](site/img/screens/dark/07-secrets--add.webp) | ![Grants: tool, secret and host as one chain](site/img/screens/light/09-toekenningen--default.webp) |
-| **Secrets**: in once, never back out. *sensitive* on by default. | **Grants**: quietly, with a notification, or ask every time. |
+| ![Approve in the tray](site/img/app/tray-approval.png) | ![Touch your passkey](site/img/app/touch.png) |
+| **Approve in the tray** (still in Dutch). | **A touch, not a click.** |
+| ![Secrets: name and domains, never the value](site/img/app/secrets.png) | ![Grants: tool, secret and domain as one chain](site/img/app/grants.png) |
+| **Secrets**: in once, never back out. *Sensitive* on by default. | **Grants**: quietly, with a notification, or ask every call. |
 
-Every screen, in both themes: [the tour](https://kimvanrenterghemnew.github.io/Vaultgate/tour.html).
+Every screen: [the tour](https://vaultgate.github.io/Vaultgate/tour.html).
 
 ## Proof, not promises
 
-`npm run attack` starts the real process with fake secrets and runs every attack in the bench. The attacks come from security audits and from one question: "if you were an agent on this computer, how would you get in?" Today: **22 attacks, 17 blocked, 5 open** (each with its reason), and no secret in any output. In every test, a leak check searches all output (logs, responses, pages) for the recognizable fake secrets. The full table is published with the first release.
+`npm run attack` starts the real process with fake secrets and runs every attack in the bench. The attacks come from security audits and from one question: “if you were an agent on this computer, how would you get in?” Today: **24 attacks, 21 blocked, 3 open** (each with its reason, listed on the [security page](https://vaultgate.github.io/Vaultgate/security.html#bench)), and no secret in any output. In every test, a leak check searches all output (logs, responses, pages) for the recognizable fake secrets. The full table is published with the first release.
 
 ## Principles
 

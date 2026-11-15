@@ -1,0 +1,114 @@
+<div class="work-head flex-wrap">
+  <div class="min-w-0">
+    <h1 class="screen-title" data-i18n="portal.settings.title"></h1>
+    <p class="max-w-[68ch]" data-i18n="portal.settings.intro"></p>
+  </div>
+  <span class="flex items-center gap-1.5 text-sm muted"><svg class="size-4 text-[var(--ok)]" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="portal.settings.auto"></span></span>
+</div>
+<div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+  <div class="flex flex-col gap-4">
+    <section class="panel" aria-labelledby="set-g-vault">
+      <div class="panel-head"><h2 id="set-g-vault" data-i18n="portal.settings.groupVault"></h2></div>
+      <div class="rows">
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium"><label for="set-autolock" data-i18n="portal.settings.autolock"></label></p><p class="text-sm muted" data-i18n="portal.settings.autolockHelp"></p></div>
+          <select id="set-autolock" class="select select-sm w-44" data-testid="set-autolock"><option value="5" translate="no">5 min</option><option value="15" translate="no">15 min</option><option value="60" translate="no">60 min</option></select></div>
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium"><label for="set-timeout" data-i18n="portal.settings.timeout"></label></p><p class="text-sm muted" data-i18n="portal.settings.timeoutHelp"></p></div>
+          <select id="set-timeout" class="select select-sm w-44" data-testid="set-timeout"><option value="15" translate="no">15 s</option><option value="30" translate="no">30 s</option><option value="60" translate="no">60 s</option></select></div>
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium"><label for="set-touch" data-i18n="portal.settings.touch"></label></p><p class="text-sm muted" data-i18n="portal.settings.touchHelp"></p></div>
+          <select id="set-touch" class="select select-sm w-44" data-testid="set-touch"><option value="any" data-i18n="portal.settings.touchAny"></option><option value="external" data-i18n="portal.settings.touchExternal"></option></select></div>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="set-g-look">
+      <div class="panel-head"><h2 id="set-g-look" data-i18n="portal.settings.groupLook"></h2></div>
+      <div class="rows">
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium"><label for="set-language" data-i18n="portal.settings.language"></label></p><p class="text-sm muted" data-i18n="portal.settings.languageHelp"></p></div>
+          <select id="set-language" class="select select-sm w-44" data-testid="set-language"><option value="" data-i18n="portal.settings.languageSystem"></option><option value="en" translate="no">English</option><option value="nl" translate="no">Nederlands</option></select></div>
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium"><label for="set-theme" data-i18n="portal.settings.theme"></label></p><p class="text-sm muted" data-i18n="portal.settings.themeHelp"></p></div>
+          <select id="set-theme" class="select select-sm w-44" data-testid="set-theme"><option value="" data-i18n="portal.settings.themeSystem"></option><option value="dracula" data-i18n="portal.settings.themeDark"></option><option value="console-light" data-i18n="portal.settings.themeLight"></option></select></div>
+      </div>
+    </section>
+  </div>
+  <div class="flex flex-col gap-4">
+    <section class="panel" aria-labelledby="set-g-net">
+      <div class="panel-head"><h2 id="set-g-net" data-i18n="portal.settings.groupNetwork"></h2></div>
+      <div class="rows">
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium" data-i18n="portal.settings.listeners"></p><p id="set-listeners-now" class="text-sm muted" data-testid="set-listeners-now"></p></div>
+          <button id="set-listeners-open" class="btn btn-sm btn-outline gap-1" data-testid="set-listeners-open"><svg class="size-4" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.keys.edit"></span></button></div>
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium" data-i18n="portal.settings.routes"></p><p id="set-routes-now" class="text-sm muted" data-testid="set-routes-now"></p></div>
+          <button id="set-routes-open" class="btn btn-sm btn-outline gap-1" data-testid="set-routes-open"><svg class="size-4" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.keys.edit"></span></button></div>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="set-g-quiet">
+      <div class="panel-head"><h2 id="set-g-quiet" data-i18n="portal.settings.groupQuiet"></h2></div>
+      <div class="rows">
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium" data-i18n="portal.settings.quietHours"></p><p class="text-sm muted"><span data-i18n="portal.settings.quietHoursHelp"></span>: <span id="set-quiet-now" class="mono" data-testid="set-quiet-now"></span></p></div>
+          <button id="set-quiet-open" class="btn btn-sm btn-outline gap-1" data-testid="set-quiet-open"><svg class="size-4" aria-hidden="true"><use href="#i-edit"/></svg><span data-i18n="portal.keys.edit"></span></button></div>
+        <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium" data-i18n="portal.settings.notifications"></p><p class="text-sm muted" data-i18n="portal.settings.notificationsHelp"></p></div>
+          <span id="set-silence" class="contents"></span></div>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="set-g-security">
+      <div class="panel-head"><h2 id="set-g-security" data-i18n="portal.specs.title"></h2></div>
+      <div class="flex items-center gap-4 px-4 py-3"><p class="min-w-0 flex-1 text-sm muted" data-i18n="portal.specs.help"></p><ks-security-specs></ks-security-specs></div>
+    </section>
+    <section class="panel border-error/30" aria-labelledby="set-g-danger">
+      <div class="panel-head"><h2 id="set-g-danger" class="text-error" data-i18n="portal.settings.groupDanger"></h2></div>
+      <div class="flex items-center gap-4 px-4 py-3"><div class="min-w-0 flex-1"><p class="font-medium text-error" data-i18n="portal.settings.deleteVault"></p><p class="text-sm muted" data-i18n="portal.settings.deleteVaultHelp"></p></div>
+        <button id="set-delete-vault" type="button" class="btn btn-sm btn-error btn-outline gap-1" data-testid="set-delete-vault"><svg class="size-4 shrink-0" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.settings.deleteVault"></span></button></div>
+    </section>
+  </div>
+</div>
+
+<dialog id="set-listeners-dialog" class="modal" aria-labelledby="set-listeners-title">
+  <div class="modal-box max-w-lg">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="set-listeners-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-globe"/></svg><span data-i18n="portal.settings.listeners"></span></h3>
+    <p class="text-sm opacity-75 mt-1" data-i18n="portal.settings.listenersIntro"></p>
+    <div role="alert" class="alert alert-soft alert-warning text-xs mt-3"><svg class="size-4 shrink-0" aria-hidden="true"><use href="#i-warn"/></svg><span data-i18n="portal.settings.listenersWarning"></span></div>
+    <fieldset class="fieldset mt-3"><label class="label" for="set-listeners" data-i18n="portal.settings.listenersLabel"></label><textarea id="set-listeners" rows="3" class="textarea w-full font-mono" placeholder="192.168.1.50:8484" data-testid="set-listeners"></textarea><p class="label text-xs whitespace-normal" data-i18n="portal.settings.listenersHelp"></p></fieldset>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="set-listeners-save" class="btn btn-primary" data-testid="set-listeners-save" data-i18n="portal.keys.editSave"></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<dialog id="set-quiet-dialog" class="modal" aria-labelledby="set-quiet-title">
+  <div class="modal-box max-w-lg">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="set-quiet-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-clock"/></svg><span data-i18n="portal.settings.quietHours"></span></h3>
+    <p class="text-sm opacity-75 mt-1" data-i18n="portal.settings.quietIntro"></p>
+    <fieldset class="fieldset mt-3"><label class="label" for="set-quiet" data-i18n="portal.settings.quietLabel"></label><textarea id="set-quiet" rows="3" class="textarea w-full font-mono" placeholder="23:00-07:00" data-testid="set-quiet"></textarea><p class="label text-xs whitespace-normal" data-i18n="portal.settings.quietHelp"></p></fieldset>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="set-quiet-save" class="btn btn-primary" data-testid="set-quiet-save" data-i18n="portal.keys.editSave"></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<dialog id="set-routes-dialog" class="modal" aria-labelledby="set-routes-title">
+  <div class="modal-box max-w-3xl">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+    <h3 id="set-routes-title" class="font-bold text-xl pr-8" data-i18n="portal.settings.routes"></h3>
+    <p class="text-sm opacity-75 mt-1" data-i18n="portal.settings.routesIntro"></p>
+    <div id="set-routes" class="space-y-2 mt-3" data-testid="set-routes"></div>
+    <button type="button" id="set-route-add" class="btn btn-sm btn-ghost gap-1 mt-2" data-testid="set-route-add"><svg class="size-4" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="portal.settings.routeAdd"></span></button>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-i18n="portal.ask.cancel"></button></form>
+      <button type="button" id="set-routes-save" class="btn btn-primary" data-testid="set-routes-save" data-i18n="portal.keys.editSave"></button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<template data-template="route">
+  <div class="grid grid-cols-[1fr_2fr_1fr_1fr_auto] gap-2 items-center" data-route>
+    <input class="input input-sm font-mono" data-part="name" placeholder="litellm" data-i18n-aria-label="portal.settings.routeName">
+    <input class="input input-sm font-mono" data-part="base" placeholder="http://127.0.0.1:4000" data-i18n-aria-label="portal.settings.routeBase">
+    <input class="input input-sm font-mono" data-part="secret" placeholder="litellm" data-i18n-aria-label="portal.common.secret">
+    <select class="select select-sm" data-part="header" data-i18n-aria-label="portal.settings.routeHeader"><option value="authorization" translate="no">Authorization</option><option value="x-api-key" translate="no">x-api-key</option><option value="x-goog-api-key" translate="no">x-goog-api-key</option><option value="basic" translate="no">Basic</option></select>
+    <button type="button" class="btn btn-sm btn-ghost text-error" data-action="remove" data-i18n-aria-label="portal.grants.revoke"><svg class="size-4" aria-hidden="true"><use href="#i-trash"/></svg></button>
+  </div>
+</template>

@@ -1,0 +1,22 @@
+<div class="flex min-h-[70vh] flex-col items-center justify-center gap-5 py-6">
+<div class="flex items-center gap-2 text-[22px] font-semibold"><svg class="size-7 text-[var(--signal)]" aria-hidden="true"><use href="#i-gate"/></svg><span translate="no">Vaultgate</span></div>
+<div class="focus-card items-center text-center" data-layout="focus">
+  <div class="touch-orb w-fit"><svg class="size-10" aria-hidden="true"><use href="#i-touch"/></svg></div>
+  <h1 class="screen-title" data-i18n="portal.login.title"></h1>
+  <p id="login-passkey-text" class="text-sm ink-2" data-i18n="portal.login.passkeyText"></p>
+  <button id="login-go" class="btn btn-primary btn-lg w-full" data-testid="login-go" data-i18n="portal.login.go"></button>
+  <div id="login-bootstrap" class="hidden w-full text-left">
+    <p class="text-sm muted" data-i18n="portal.login.bootstrapText"></p>
+    <fieldset class="fieldset"><label class="label" for="bootstrap-pass" data-i18n="portal.common.passphrase"></label><input id="bootstrap-pass" type="password" class="input w-full" data-testid="bootstrap-pass"></fieldset>
+    <button id="bootstrap-go" class="btn btn-primary" data-testid="bootstrap-go" data-i18n="portal.common.unlock"></button>
+  </div>
+  <details id="login-recover" class="w-full text-left hidden"><summary class="cursor-pointer text-sm muted" data-i18n="portal.login.lost"></summary>
+    <fieldset class="fieldset">
+      <label class="label" for="recover-code" data-i18n="portal.login.recoveryCode"></label><input id="recover-code" class="input w-full font-mono" data-testid="recover-code">
+      <label class="label" for="recover-pass" data-i18n="portal.login.newPassphrase"></label><input id="recover-pass" type="password" class="input w-full" data-testid="recover-pass">
+    </fieldset>
+    <button id="recover-go" class="btn btn-sm mt-2" data-testid="recover-go" data-i18n="portal.login.recover"></button>
+  </details>
+</div>
+<p id="login-start-over" class="max-w-[52ch] text-center text-sm muted hidden" data-testid="login-start-over" data-i18n="portal.login.startOver"></p>
+</div>

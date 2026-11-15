@@ -1,0 +1,28 @@
+<!-- Getting started (v23): één paneel, de vier stappen op een rij (gedaan: vinkje, open: nummer), de volgende stap en één knop. -->
+<section class="panel" aria-labelledby="wizard-title">
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+    <h2 id="wizard-title" class="text-sm font-medium" data-i18n="portal.wizard.title"></h2>
+    <ol class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" data-testid="wizard-steps">
+      <li class="wizard-step" data-step="passkey"><span class="wizard-mark" aria-hidden="true"><svg><use href="#i-check"/></svg><b>1</b></span><span data-i18n="portal.wizard.passkey"></span></li>
+      <li class="wizard-step" data-step="tool"><span class="wizard-mark" aria-hidden="true"><svg><use href="#i-check"/></svg><b>2</b></span><span data-i18n="portal.wizard.key"></span></li>
+      <li class="wizard-step" data-step="secret"><span class="wizard-mark" aria-hidden="true"><svg><use href="#i-check"/></svg><b>3</b></span><span data-i18n="portal.wizard.secret"></span></li>
+      <li class="wizard-step" data-step="grant"><span class="wizard-mark" aria-hidden="true"><svg><use href="#i-check"/></svg><b>4</b></span><span data-i18n="portal.wizard.firstCall"></span></li>
+    </ol>
+    <div class="ml-auto flex items-center gap-3">
+      <p id="wizard-next" class="text-sm ink-2" data-testid="wizard-next"></p>
+      <button id="wizard-go" class="btn btn-primary btn-sm" data-testid="wizard-go"></button>
+    </div>
+  </div>
+  <div id="wizard-config" class="hidden space-y-2 border-t border-[var(--line)] px-4 py-3" data-testid="wizard-config">
+    <p class="text-sm muted" data-i18n="portal.wizard.checkIntro"></p>
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-4 md:items-end">
+      <fieldset class="fieldset"><label class="label" for="wz-tool" data-i18n="portal.common.virtualKey"></label><select id="wz-tool" class="select select-sm" data-testid="wz-tool"></select></fieldset>
+      <fieldset class="fieldset"><label class="label" for="wz-secret" data-i18n="portal.common.secret"></label><select id="wz-secret" class="select select-sm" data-testid="wz-secret"></select></fieldset>
+      <button id="wz-check" class="btn btn-sm btn-outline" data-testid="wz-check" data-i18n="portal.wizard.check"></button>
+      <div id="wz-result" class="md:col-span-4" data-testid="wz-result"></div>
+    </div>
+  </div>
+</section>
+<template data-template="result-success"><p role="status" class="note note-signal"><span><span class="stamp stamp-pass" data-field="rule" translate="no"></span> <span data-field="text"></span></span></p></template>
+<template data-template="result-warning"><p role="status" class="note"><span><span class="stamp stamp-shield" data-field="rule" translate="no"></span> <span data-field="text"></span></span></p></template>
+<template data-template="result-error"><p role="status" class="note note-warn"><span><span class="stamp stamp-shield" data-field="rule" translate="no"></span> <span data-field="text"></span></span></p></template>

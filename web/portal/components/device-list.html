@@ -1,0 +1,17 @@
+<div class="overflow-x-auto max-h-[300px] overflow-y-auto"><table class="table" data-testid="device-table">
+  <thead><tr><th data-i18n="portal.common.tool"></th><th data-i18n="portal.device.client"></th><th class="hidden 2xl:table-cell" data-i18n="portal.device.since"></th><th></th></tr></thead>
+  <tbody id="device"></tbody>
+</table></div>
+<p id="device-empty" class="opacity-60 hidden" data-testid="device-empty" data-i18n="portal.device.empty"></p>
+
+<template data-template="row">
+  <tr>
+    <td><div class="flex flex-wrap gap-1"><span class="font-mono whitespace-nowrap" data-field="name"></span><span data-if="existing" data-if-not="pairable" class="badge badge-soft badge-warning" data-i18n="portal.device.exists"></span><span data-if="pairable" class="badge badge-soft badge-info" data-i18n="portal.device.rotated"></span></div></td>
+    <td data-field="client"></td>
+    <td class="hidden 2xl:table-cell" data-field="since"></td>
+    <td><div class="flex flex-wrap gap-1">
+      <button class="btn btn-xs btn-outline gap-1" data-action="approve" data-testid="device-approve-{name}"><svg class="size-3" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.device.approve"></span></button>
+      <button class="btn btn-xs btn-primary" data-action="deny" data-testid="device-deny-{name}" data-i18n="portal.device.deny"></button>
+    </div></td>
+  </tr>
+</template>

@@ -1,0 +1,135 @@
+<!-- De dialogen van Certificates (hoort bij ks-tls-tab): uitleg, vertrouwen, intrekken, details, roots op deze pc. -->
+<!-- Intro modal (#tls-intro-dialog) -->
+<dialog id="tls-intro-dialog" class="modal" data-testid="tls-intro-dialog" aria-labelledby="tls-intro-title">
+  <div class="modal-box max-w-xl border border-base-content/10">
+    <h3 id="tls-intro-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-6 text-warning" aria-hidden="true"><use href="#i-shield"/></svg><span data-i18n="portal.tls.introTitle"></span></h3>
+    <p class="text-sm opacity-80 mt-2" data-i18n="portal.tls.introDesc"></p>
+    <div class="space-y-3 mt-4 text-sm">
+      <div class="flex items-start gap-3 rounded-lg bg-base-200 p-3">
+        <div class="badge badge-info badge-sm shrink-0 mt-0.5 font-bold">1</div>
+        <div>
+          <p class="font-semibold" data-i18n="portal.tls.step1Title"></p>
+          <p class="opacity-75 text-xs mt-0.5" data-i18n="portal.tls.step1Desc"></p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 rounded-lg bg-base-200 p-3">
+        <div class="badge badge-success badge-sm shrink-0 mt-0.5 font-bold">2</div>
+        <div>
+          <p class="font-semibold" data-i18n="portal.tls.step2Title"></p>
+          <p class="opacity-75 text-xs mt-0.5" data-i18n="portal.tls.step2Desc"></p>
+        </div>
+      </div>
+      <div class="alert alert-warning alert-soft text-xs">
+        <svg class="size-5 shrink-0" aria-hidden="true"><use href="#i-warn"/></svg>
+        <div>
+          <strong class="font-semibold block" data-i18n="portal.tls.inspectionWarnTitle"></strong>
+          <span data-i18n="portal.tls.inspectionWarn"></span>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-action">
+      <button class="btn btn-primary" data-action="close-intro" data-i18n="portal.tls.understand"></button>
+    </form>
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Trust modal (#tls-trust-dialog) -->
+<dialog id="tls-trust-dialog" class="modal" data-testid="tls-trust-dialog" aria-labelledby="tls-trust-title">
+  <div class="modal-box max-w-lg border border-base-content/10">
+    <h3 id="tls-trust-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-warning" aria-hidden="true"><use href="#i-cert"/></svg><span id="tls-trust-heading"></span></h3>
+    <div class="alert alert-warning alert-soft text-xs mt-3">
+      <svg class="size-4 shrink-0" aria-hidden="true"><use href="#i-warn"/></svg>
+      <div>
+        <strong class="font-semibold block" data-i18n="portal.tls.inspectionWarnTitle"></strong>
+        <span id="tls-trust-warn-text"></span>
+      </div>
+    </div>
+    <p class="text-sm opacity-80 mt-3" data-i18n="portal.tls.trustInstruction"></p>
+    <div class="rounded-box bg-base-200 p-3 mt-3 text-sm">
+      <p id="tls-trust-issuer" class="font-semibold"></p>
+      <p id="tls-trust-fingerprint" class="font-mono text-xs mt-1 break-all"></p>
+    </div>
+    <div class="space-y-2 mt-4 text-sm">
+      <p class="text-sm font-medium" data-i18n="portal.tls.trustScope"></p>
+      <label class="flex items-start gap-2.5 p-2 rounded-lg bg-base-100 border border-base-content/10 cursor-pointer">
+        <input type="radio" name="trust-scope" value="host" class="radio radio-sm mt-0.5" checked>
+        <div>
+          <p id="tls-trust-scope-host-label" class="font-semibold text-xs"></p>
+          <p class="text-xs opacity-70" data-i18n="portal.tls.scopeHostDesc"></p>
+        </div>
+      </label>
+      <label class="flex items-start gap-2.5 p-2 rounded-lg bg-base-100 border border-base-content/10 cursor-pointer">
+        <input type="radio" name="trust-scope" value="global" class="radio radio-sm mt-0.5">
+        <div>
+          <p class="font-semibold text-xs" data-i18n="portal.tls.scopeGlobalTitle"></p>
+          <p class="text-xs opacity-70" data-i18n="portal.tls.scopeGlobalDesc"></p>
+        </div>
+      </label>
+    </div>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-action="close-trust" data-i18n="portal.tls.keepBlocking"></button></form>
+      <button type="button" class="btn btn-warning gap-1" data-action="trust-touch"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.tls.trustTouch"></span></button>
+    </div>
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Untrust modal (#tls-untrust-dialog) -->
+<dialog id="tls-untrust-dialog" class="modal" data-testid="tls-untrust-dialog" aria-labelledby="tls-untrust-title">
+  <div class="modal-box max-w-lg border border-base-content/10">
+    <h3 id="tls-untrust-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-error" aria-hidden="true"><use href="#i-ban"/></svg><span id="tls-untrust-heading"></span></h3>
+    <p id="tls-untrust-desc" class="mt-2 text-sm"></p>
+    <p class="text-xs opacity-70 mt-2" data-i18n="portal.tls.untrustImmediate"></p>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-action="cancel-untrust" data-i18n="portal.common.cancel"></button></form>
+      <button type="button" class="btn btn-error" data-action="confirm-untrust" data-i18n="portal.tls.untrustConfirm"></button>
+    </div>
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Details modal (#tls-details-dialog) -->
+<dialog id="tls-details-dialog" class="modal" data-testid="tls-details-dialog" aria-labelledby="tls-details-title">
+  <div class="modal-box max-w-2xl border border-base-content/10">
+    <h3 id="tls-details-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-success" aria-hidden="true"><use href="#i-cert"/></svg><span id="tls-details-heading"></span></h3>
+    <dl class="grid grid-cols-[9rem_1fr] gap-y-1.5 text-sm mt-3">
+      <dt class="opacity-70" data-i18n="portal.tls.detailsIssuer"></dt><dd id="tls-details-issuer"></dd>
+      <dt class="opacity-70" data-i18n="portal.tls.detailsFingerprint"></dt><dd id="tls-details-fingerprint" class="font-mono text-xs break-all"></dd>
+      <dt class="opacity-70" data-i18n="portal.tls.detailsValid"></dt><dd id="tls-details-valid"></dd>
+      <dt class="opacity-70" data-i18n="portal.tls.detailsScope"></dt><dd id="tls-details-scope"></dd>
+    </dl>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-ghost" data-action="close-details" data-i18n="portal.common.close"></button></form>
+    </div>
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<!-- Review roots modal (#tls-review-dialog) -->
+<dialog id="tls-review-dialog" class="modal" data-testid="tls-review-dialog" aria-labelledby="tls-review-title">
+  <div class="modal-box max-w-2xl border border-base-content/10">
+    <h3 id="tls-review-title" class="font-bold text-xl flex items-center gap-2 pr-8"><svg class="size-5 text-primary" aria-hidden="true"><use href="#i-cert"/></svg><span data-i18n="portal.tls.reviewRootsTitle"></span></h3>
+    <p class="text-sm opacity-75 mt-1" data-i18n="portal.tls.reviewRootsDesc"></p>
+    <div id="tls-review-list" class="ledger mt-3"></div>
+    <p id="tls-review-empty" class="text-sm opacity-70 mt-3 hidden" data-i18n="portal.tls.noExtraRoots"></p>
+    <div class="modal-action">
+      <form method="dialog"><button class="btn btn-primary" data-action="close-review" data-i18n="portal.common.done"></button></form>
+    </div>
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" data-i18n-aria-label="portal.keys.close"><svg class="size-4" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button tabindex="-1" data-i18n="portal.keys.close"></button></form>
+</dialog>
+
+<template data-template="review-row">
+  <div class="ledger-row">
+    <div class="min-w-0 flex-1">
+      <p class="font-semibold" data-field="subject"></p>
+      <p class="text-xs opacity-75 font-mono" data-field="fingerprint"></p>
+    </div>
+  </div>
+</template>

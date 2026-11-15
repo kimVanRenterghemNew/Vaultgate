@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Weekly as well: a new vulnerability in a dependency shows up without a commit.
+  schedule:
+    - cron: '17 5 * * 1'
 
 permissions:
   contents: read
@@ -37,6 +40,15 @@ jobs:
 
       - if: steps.code.outputs.present == 'true'
         run: npm ci
+
+      # Dependencies: known vulnerabilities (high or worse, runtime only) and the registry signatures of the lockfile.
+      - name: Known vulnerabilities (runtime)
+        if: steps.code.outputs.present == 'true'
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Registry signatures
+        if: steps.code.outputs.present == 'true'
+        run: npm audit signatures
 
       - name: Playwright Chromium (Linux)
         if: steps.code.outputs.present == 'true' && runner.os == 'Linux'

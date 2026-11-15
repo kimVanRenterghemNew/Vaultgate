@@ -1,0 +1,52 @@
+<!-- Een virtuele key maken, in de drie stappen van de mockups onder elkaar: naam, soort, en hoe de tool haar key krijgt.
+     Eén kolom: het past in de dialoog van Virtual keys en in de kolom van het welkom. -->
+<div class="flex flex-col gap-6">
+  <div class="step-block">
+    <span class="step-num">1</span>
+    <div class="flex-1 space-y-2">
+      <label class="step-title block" for="kn-name" data-i18n="portal.keyCreate.nameTitle"></label>
+      <input id="kn-name" class="input w-full font-mono" placeholder="claude-code" data-testid="t-name">
+      <p class="step-help" data-i18n="portal.keyCreate.nameHelp"></p>
+    </div>
+  </div>
+  <div class="step-block">
+    <span class="step-num">2</span>
+    <fieldset class="flex-1 space-y-2">
+      <legend class="step-title" data-i18n="portal.keyCreate.kindTitle"></legend>
+      <div class="grid grid-cols-2 gap-3" role="radiogroup">
+        <button type="button" class="choice-card" data-kind="web" data-testid="kf-kind-web" role="radio"><svg class="size-5 shrink-0" aria-hidden="true"><use href="#i-globe"/></svg><span><span class="block font-medium" data-i18n="portal.keys.kindWeb"></span><span class="block text-sm muted" data-i18n="portal.keyCreate.webHelp"></span></span></button>
+        <button type="button" class="choice-card" data-kind="mcp" data-testid="kf-kind-mcp" role="radio"><svg class="size-5 shrink-0" aria-hidden="true"><use href="#i-plug"/></svg><span><span class="block font-medium" data-i18n="portal.keys.kindMcp"></span><span class="block text-sm muted" data-i18n="portal.keyCreate.mcpHelp"></span></span></button>
+      </div>
+    </fieldset>
+  </div>
+  <div class="step-block min-w-0">
+    <span class="step-num">3</span>
+    <div class="flex-1 min-w-0 space-y-3">
+      <p class="step-title" data-i18n="portal.keyCreate.giveTitle"></p>
+      <div data-kind-panel="web" class="grid grid-cols-2 gap-3" role="tablist">
+        <button type="button" role="tab" class="choice-card" data-way="pair" data-testid="key-way-pair"><svg class="size-5 shrink-0" aria-hidden="true"><use href="#i-link"/></svg><span><span class="block font-medium"><span data-i18n="portal.keyCreate.wayAuto"></span> <span class="tag tag-signal" data-i18n="portal.welcome.wayBest"></span></span><span class="block text-sm muted" data-i18n="portal.keyCreate.wayAutoHelp"></span></span></button>
+        <button type="button" role="tab" class="choice-card" data-way="manual" data-testid="key-way-manual"><svg class="size-5 shrink-0" aria-hidden="true"><use href="#i-key"/></svg><span><span class="block font-medium" data-i18n="portal.keyCreate.wayManual"></span><span class="block text-sm muted" data-i18n="portal.keyCreate.wayManualHelp"></span></span></button>
+      </div>
+      <div data-way-panel="pair" class="rounded-lg border border-[var(--line)] bg-base-200 p-4 space-y-3" data-testid="key-pair">
+        <p class="text-sm" data-i18n="portal.keyCreate.pairRun"></p>
+        <div class="join w-full" translate="no"><code id="kn-pair-cmd" class="join-item flex-1 min-w-0 border border-[var(--line-2)] bg-base-300 px-3 py-2 font-mono text-sm break-words" data-testid="key-pair-command" data-cli="login --name claude-code --proxy {proxy}"></code><button type="button" id="kn-copy-cmd" class="btn join-item" data-testid="key-pair-copy" data-i18n="portal.keys.copy"></button></div>
+        <p class="text-sm" data-i18n="portal.keyCreate.pairCheck"></p>
+        <div id="kn-device-slot"></div>
+        <div id="kn-paired" role="status" class="note note-signal hidden" data-testid="key-paired"><svg aria-hidden="true"><use href="#i-check"/></svg><span id="kn-paired-text"></span></div>
+        <!-- Alleen om te zien welke tool er nieuw bij kwam (ook na toestaan in de tray); de lijst zelf staat bij Virtual keys. -->
+        <div id="kn-tools-slot" hidden></div>
+      </div>
+      <div data-way-panel="manual" class="rounded-lg border border-[var(--line)] bg-base-200 p-4 space-y-3 hidden">
+        <div id="kn-form" class="space-y-3">
+        <p class="text-sm muted" data-kind-panel="web" data-i18n="portal.welcome.manualHelp"></p>
+        <p class="text-sm muted" data-kind-panel="mcp" data-i18n="portal.keyCreate.mcpCreateHelp"></p>
+        <details><summary class="cursor-pointer text-sm muted" data-i18n="portal.keys.otherMachines"></summary>
+          <fieldset class="fieldset"><label class="label" for="kn-clients" data-i18n="portal.keys.clients"></label><input id="kn-clients" placeholder="192.168.56.10" class="input w-full" data-testid="t-clients"></fieldset>
+        </details>
+        <div class="flex justify-end"><button id="kn-add" type="button" class="btn btn-primary gap-2" data-testid="t-add"><svg class="size-4" aria-hidden="true"><use href="#i-touch"/></svg><span data-i18n="portal.keys.create"></span></button></div>
+        </div>
+        <div id="kn-reveal-slot"></div>
+      </div>
+    </div>
+  </div>
+</div>

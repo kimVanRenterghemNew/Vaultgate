@@ -1,0 +1,75 @@
+<div class="work-head flex-wrap">
+  <div class="min-w-0">
+    <h1 class="screen-title" data-i18n="portal.tls.title"></h1>
+    <p class="max-w-[68ch]" data-i18n="portal.tls.subtitle"></p>
+  </div>
+  <div class="flex items-center gap-2 shrink-0">
+    <button type="button" class="btn btn-ghost btn-sm gap-1.5" data-action="open-intro"><svg class="size-4" aria-hidden="true"><use href="#i-shield"/></svg><span data-i18n="portal.tls.guideBtn"></span></button>
+    <button type="button" class="btn btn-outline btn-sm gap-1.5" data-action="open-review"><svg class="size-4" aria-hidden="true"><use href="#i-cert"/></svg><span data-i18n="portal.tls.reviewBtn"></span></button>
+  </div>
+</div>
+<div class="split h-[calc(100vh-15rem)] min-h-[420px]">
+  <section class="panel" aria-labelledby="tls-roots-head">
+    <div class="panel-head"><h2 id="tls-roots-head" data-i18n="portal.tls.roots"></h2><span id="tls-waits"></span></div>
+    <div id="tls-list" class="panel-body rows" role="listbox" data-testid="tls-list" data-i18n-aria-label="portal.tls.roots"></div>
+    <p id="tls-trusted-empty" class="panel-foot muted hidden" data-i18n="portal.tls.emptyTrusted"></p>
+  </section>
+  <section id="tls-detail" class="panel" data-testid="tls-detail" data-i18n-aria-label="portal.tls.title"></section>
+</div>
+
+<!-- Een keten die je niet vertrouwt (gewijzigd of nooit vertrouwd): wacht op jou. -->
+<template data-template="broken-row">
+  <button type="button" role="option" class="row" data-testid="tls-broken-row">
+    <span class="row-icon text-[var(--bad)]"><svg aria-hidden="true"><use href="#i-chain-broken"/></svg></span>
+    <span class="min-w-0"><span class="row-title" data-field="root"></span><span class="row-sub" data-field="host"></span></span>
+    <span class="stamp stamp-alarm" data-field="kind" translate="no"></span>
+  </button>
+</template>
+<template data-template="broken-detail">
+  <article class="detail">
+    <div>
+      <p class="reading reading-bad" data-field="kind" translate="no"></p>
+      <p class="reading-note" data-field="description"></p>
+    </div>
+    <dl class="facts">
+      <dt data-i18n="portal.tls.colBefore"></dt><dd data-field="before"></dd>
+      <dt data-i18n="portal.tls.colNow"></dt><dd data-field="now"></dd>
+      <dt data-i18n="portal.tls.fingerprint"></dt><dd class="mono" data-field="fingerprint"></dd>
+      <dt data-i18n="portal.tls.validTo"></dt><dd data-field="validTo"></dd>
+      <dt data-i18n="portal.tls.requests"></dt><dd data-i18n="portal.tls.stopped"></dd>
+    </dl>
+    <div class="detail-actions">
+      <p data-i18n="portal.tls.notYours"></p>
+      <button type="button" class="btn btn-outline btn-sm" data-action="review-trust" data-testid="tls-review-trust" data-i18n="portal.tls.reviewTrust"></button>
+    </div>
+  </article>
+</template>
+
+<!-- Een root die je vertrouwt, voor één domein of voor alle (een bedrijfsproxy: elke request is dan "inspected"). -->
+<template data-template="trusted-row">
+  <button type="button" role="option" class="row" data-testid="tls-trusted-row">
+    <span class="row-icon"><svg aria-hidden="true"><use href="#i-cert"/></svg></span>
+    <span class="min-w-0"><span class="row-title" data-field="issuer"></span><span class="row-sub" data-field="scope"></span></span>
+    <span data-if="globalScope" class="tag tag-warn" data-i18n="portal.tls.inspected"></span><span data-if="hostScope" class="tag" data-i18n="portal.tls.trusted"></span>
+  </button>
+</template>
+<template data-template="trusted-detail">
+  <article class="detail">
+    <div>
+      <p class="reading" data-field="reading"></p>
+      <p data-if="globalScope" class="reading-note" data-i18n="portal.tls.globalNote"></p>
+      <p data-if="hostScope" class="reading-note" data-field="hostNote"></p>
+    </div>
+    <dl class="facts">
+      <dt data-i18n="portal.tls.fingerprint"></dt><dd class="mono" data-field="fingerprint"></dd>
+      <dt data-if="validTo" data-i18n="portal.tls.validTo"></dt><dd data-if="validTo" data-field="validTo"></dd>
+      <dt data-if="trustedAt" data-i18n="portal.tls.trustedAt"></dt><dd data-if="trustedAt" data-field="trustedAt"></dd>
+      <dt data-i18n="portal.tls.chain"></dt><dd class="flex items-center gap-1.5"><svg class="size-4 text-[var(--ok)]" aria-hidden="true"><use href="#i-chain-ok"/></svg><span data-i18n="portal.tls.chainIntact"></span></dd>
+    </dl>
+    <div class="detail-actions">
+      <button type="button" class="btn btn-sm btn-ghost text-[var(--bad)] gap-1" data-action="revoke-trust"><svg class="size-4" aria-hidden="true"><use href="#i-ban"/></svg><span data-i18n="portal.tls.revoke"></span></button>
+      <button type="button" class="btn btn-sm btn-outline gap-1" data-action="details"><svg class="size-4" aria-hidden="true"><use href="#i-cert"/></svg><span data-i18n="portal.tls.details"></span></button>
+    </div>
+  </article>
+</template>
+<template data-template="pick"><p class="p-6 muted" data-i18n="portal.tls.emptyTrusted"></p></template>

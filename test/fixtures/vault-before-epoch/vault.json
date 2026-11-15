@@ -1,0 +1,46 @@
+{
+ "format": 1,
+ "methods": [
+  {
+   "id": "ad581f3f5abed89033052920e1284a3c",
+   "type": "passphrase",
+   "salt": "MzuVa3hoFYkWzRR5J5Kdqg==",
+   "kdf": {
+    "alg": "argon2id13",
+    "ops": 2,
+    "mem": 67108864
+   },
+   "publicKey": "19GKgt3PcQbvUW8SI9TpF8h/9lYsuxCug39Kw0RPSBU=",
+   "wrappedSecretKey": "v1.OAOaWnaSDEez017-DbW2KUNefjb9GICr.k8nyeoJy7W1uocjI8TANHd_E9JGiMW_0b7QV7ddNoVqsV1mz_Ty2BN17Ua9VaEvO",
+   "sealedVaultKey": "Yixf7VJx1sH6AFtutmh3c/QNQ7o6qVXNydmwFTxGUni//RtzhDvtxGvTNJWlzdatC2j+hpFybWB2ZdzJyoigVZhlBlQa+LEkg+dbJqIQhsQ=",
+   "publicKeyMac": "822d0d1f39200ce7c4dd7355a9ef1b1b7a04a49d20c30a924d95442e5b76255e"
+  },
+  {
+   "id": "c727d42e4770fc5b902d8727c66cba0e",
+   "type": "recovery",
+   "salt": "HQOvH3MqU3uubqZYZdiccg==",
+   "kdf": {
+    "alg": "argon2id13",
+    "ops": 2,
+    "mem": 67108864
+   },
+   "publicKey": "rYGBvQ0lVWYyIBuKMI4bHhwLWQSoFsSdyBpoEnxXESs=",
+   "wrappedSecretKey": "v1.A9ne8UA-T6zzSr3a1vLLzZ4dDX0SBeJk.FDNE2arTaLZhPfWFrbxAx30JY5QxI5X_k7suJp29E--JeUcHDj500GOWSWlqZAqT",
+   "sealedVaultKey": "PM9ko3ZG7QqlDN8AedPBNs2F0fNYJNRSFdZ4mFWg7XaRb671gLsDuDlzdqxnCRxKo5800W6zH9ZCN/3LX6RWHBs38ModW1oo/zR2/UyxTXc=",
+   "publicKeyMac": "187d3977138af40703b709f54b0f7161cf30fefc083d33c385318b4462fbd422"
+  }
+ ],
+ "audit": {
+  "publicKey": "wjABN/mvty36GSAnVRZAihvla05dbssIXWs+AtVwL1s=",
+  "wrappedSecretKey": "v1.cvpzXPgH-nEed0YesbSUa1uCnYCAPbgh.D8wzkKk6EW5ai51hidK9zyPdC919RHx3QoRo_E3M8wlqnn16i5-g9U-wf22PrL2m",
+  "publicKeyMac": "a3c86d3cd003f5fd88dc83a0294d74072a04db8db6ba8fe3df119409e2db0227"
+ },
+ "manifest": {
+  "records": {
+   "f1e9854a2879617195071bfc7b5afc18": 1
+  },
+  "mac": "c9310912daac87896544a2ee52c97e11e78d4e1974bd651b7d1918ec8a68d220"
+ },
+ "credentials": [],
+ "credentialsMac": "bf2e436472b410e79673d1d7082a96b714d9611c0acbd21d3877e7d9aa8765e0"
+}

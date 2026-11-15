@@ -1,0 +1,10 @@
+<div class="flex items-center gap-2 shrink-0"><svg class="size-7 text-primary" aria-hidden="true"><use href="#i-gate"/></svg><span class="text-xl font-bold" translate="no">Vaultgate</span></div>
+<ks-menu id="menu" class="hidden"></ks-menu>
+<div class="session-bar" role="group" data-testid="session" data-i18n-aria-label="portal.header.session">
+  <span id="vault-state" class="tooltip tooltip-left" data-testid="vault-state"></span>
+  <button id="lock" class="btn btn-sm btn-outline gap-1 hidden" data-testid="lock" data-i18n-title="portal.header.lockTip"><svg class="size-4" aria-hidden="true"><use href="#i-lock"/></svg><span data-i18n="portal.header.lock"></span></button>
+  <button id="logout" class="btn btn-sm btn-ghost btn-square hidden" data-testid="logout" data-i18n-aria-label="portal.header.logout" data-i18n-title="portal.header.logoutTip"><svg class="size-4" aria-hidden="true"><use href="#i-power"/></svg></button>
+</div>
+<template data-template="state-none"><span class="session-status"><span data-i18n="portal.header.noVault"></span></span></template>
+<template data-template="state-locked"><span class="session-status"><svg class="size-4" aria-hidden="true"><use href="#i-lock"/></svg><span data-i18n="portal.header.locked"></span></span></template>
+<template data-template="state-open"><span class="session-status"><svg class="size-4" aria-hidden="true"><use href="#i-clock"/></svg><span data-field="text"></span></span></template>
